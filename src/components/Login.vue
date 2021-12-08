@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import { router } from "../_helper/router";
 export default {
   name: "Login",
   data() {
@@ -50,6 +51,7 @@ export default {
     auth() {
       // your code to login user
       // this is only for example of loading
+      router.push("/home");
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
