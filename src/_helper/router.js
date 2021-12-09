@@ -3,7 +3,7 @@ import Router from "vue-router";
 
 // import { authenticationService } from "../_services/authentication.service";
 import Login from "../components/Login";
-import Form from "../components/Form";
+import PlanCreator from "../components/PlanCreator";
 
 Vue.use(Router);
 
@@ -15,8 +15,8 @@ export const router = new Router({
       component: Login,
     },
     {
-      path: "/home",
-      component: Form,
+      path: "/plano",
+      component: PlanCreator,
     },
     // otherwise redirect to home
     { path: "*", redirect: "/" },

@@ -51,7 +51,7 @@ export default {
     auth() {
       // your code to login user
       // this is only for example of loading
-      router.push("/home");
+      router.push("/plano");
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
