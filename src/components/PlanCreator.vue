@@ -2,7 +2,21 @@
   <div class="centered-container">
     <div class="content">
     <h1 class="title">Olá Professor</h1>
+    <!-- <row> -->
     <h1 class="sub-title">Plano de Aulas</h1>
+    <button @click="seeTrack()" class="go-to-track">Trilha</button>
+    <!-- </row> -->
+    <div class="title" >
+      Objetivo:
+      <!-- Aqui vai ser um input -->
+      <br/>
+      Meta:
+      <!-- Aqui vai ser um input -->
+      <br/>
+      Habilidades:
+      <!-- Aqui vai ser um select -->
+      <br/>
+    </div>
     <div class="etapa" >
       <div class="center">
         <h1 class="etapa-button">Etapa 1</h1>
@@ -85,7 +99,7 @@
 </template>
 
 <script>
-// import { router } from "../_helper/router";
+import { router } from "../_helper/router";
 export default {
   name: "PlanCreator",
   data() {
@@ -93,11 +107,15 @@ export default {
       loading: false,
       login: {
         email: "",
-        password: ""
+        password: "",
       }
     };
   },
-  
+  methods: {
+    seeTrack() {
+      router.push("/track");
+    }
+  }
 };
 </script>
 
@@ -151,6 +169,12 @@ export default {
     }
   .p {
   color: #0AE0FA; 
+  }
+  .go-to-track {
+    align-items: right;
+    justify-content: right;
+    text-align: right;
+    font-size: 20px;
   }
 .background {
     background-color: #000F63 !important;

@@ -4,6 +4,7 @@ import Router from "vue-router";
 // import { authenticationService } from "../_services/authentication.service";
 import Login from "../components/Login";
 import PlanCreator from "../components/PlanCreator";
+import TrackView from "../components/TrackView";
 
 Vue.use(Router);
 
@@ -17,6 +18,10 @@ export const router = new Router({
     {
       path: "/plano",
       component: PlanCreator,
+    },
+    {
+      path: "/track",
+      component: TrackView,
     },
     // otherwise redirect to home
     { path: "*", redirect: "/" },

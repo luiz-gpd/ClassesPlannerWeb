@@ -8,10 +8,10 @@
         <div class="md-body-1">Build beautiful apps with Material Design and Vue.js</div> -->
       </div>
 
-      <div class="form">
+      <div class="form" v-if="!isSignUp">
         <md-field>
           <label>Login</label>
-          <md-input v-model="login.email" autofocus></md-input>
+          <md-input v-model="login.email" autofocus type="email"></md-input>
         </md-field>
 
         <md-field md-has-password>
@@ -20,9 +20,35 @@
         </md-field>
       </div>
 
-      <div class="actions md-layout md-alignment-center-space-between">
-        <a href="/resetpassword">Cadastrar</a>
+      <div class="form" v-else>
+        <md-field>
+          <label>Nome</label>
+          <md-input v-model="signup.name" autofocus></md-input>
+        </md-field>
+
+        <md-field md-has-password>
+          <label>Email</label>
+          <md-input v-model="signup.email" type="email"></md-input>
+        </md-field>
+        <md-field>
+          <label>Senha</label>
+          <md-input v-model="signup.password" autofocus type="password"></md-input>
+        </md-field>
+
+        <md-field md-has-password>
+          <label>Confirmar Senha</label>
+          <md-input v-model="signup.confirmPassword" type="password"></md-input>
+        </md-field>
+      </div>
+
+      <div class="actions md-layout md-alignment-center-space-between" v-if="!isSignUp">
+        <a v-on:click="isSignUp=true" class="show-finger">Cadastrar</a>
         <md-button class="md-raised md-primary" @click="auth">Entrar</md-button>
+      </div>
+
+      <div class="actions md-layout md-alignment-center-space-between" v-else>
+        <a v-on:click="isSignUp=false" class="show-finger">Voltar</a>
+        <md-button class="md-raised md-primary" @click="auth">Cadastrar</md-button>
       </div>
 
       <div class="loading-overlay" v-if="loading">
@@ -40,10 +66,17 @@ export default {
   name: "Login",
   data() {
     return {
+      isSignUp: false,
       loading: false,
       login: {
         email: "",
         password: ""
+      },
+      signup: {
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
       }
     };
   },
@@ -95,6 +128,9 @@ export default {
     right: 0;
     left: 0;
     z-index: 0;
+  }
+  .show-finger {
+    cursor: pointer;
   }
   .md-content {
     border-radius: 20px;
