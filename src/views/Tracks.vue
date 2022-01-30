@@ -5,21 +5,15 @@
             <template v-slot:title><em class="ni ni-cloud-upload-96 mr-2"></em> Visualizar Trilha</template>
             <CreateEdit :loggedUser="loggedUser" :isCreate="isCreate" :selectedTrack="selectedTrack"></CreateEdit>
         </b-tab>
-        <b-tab v-if="selectedTrack">
-            <template v-slot:title><em class="ni ni-cloud-upload-96 mr-2"></em> Visualizar Trilha</template>
-            <TrackDetails :loggedUser="loggedUser" :selectedTrack="selectedTrack"></TrackDetails>
-        </b-tab>
   </div>
 </template>
 
 <script>
   import config from '../helpers/generalConfig';
-  import TrackDetails from './TrackDetails.vue'
   import CreateEdit from './CreateEdit.vue'
 
   export default {
       components: {
-          TrackDetails,
           CreateEdit,
       },
     data() {

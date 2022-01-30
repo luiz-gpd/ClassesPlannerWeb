@@ -4,7 +4,7 @@
       <div class="navbar fixed-top p-0 navbar-adjustment">
         <div class="offset-lg-2 col-lg-1 col-sm-1 col-1 logo-topo">
           <a href="#" v-on:click="$router.go()">
-            OI
+            <img width="100%" src="../assets/logoVisao.png" alt="Logo Colégio Visão"/>
           </a>
         </div>
         <div class="col-md-2 col-1">
@@ -14,7 +14,7 @@
             </template>
             <b-dropdown-item v-on:click="$router.push('/meuPerfil')">Meu Perfil </b-dropdown-item>
             <b-dropdown-item v-if="usuarioLogado.profile === 4" v-on:click="$router.push('/admin')">Administração </b-dropdown-item>
-            <b-dropdown-item v-if="usuarioLogado.profile === 2" >Gerar Relatório </b-dropdown-item>
+            <b-dropdown-item v-if="usuarioLogado.profile === 2" v-on:click="$router.push('/reports')">Gerar Relatório </b-dropdown-item>
             <b-dropdown-divider></b-dropdown-divider>
             <b-dropdown-item v-on:click="signOut" class>Sair</b-dropdown-item>
           </b-dropdown>
@@ -26,48 +26,35 @@
 <script>
   import config from '../helpers/generalConfig';
 
-  const avatarVazio = '@/statics/avatars_matricula/foto_avatar_pitang1.png';
-
   export default {
     name: 'user-profile-header',
     data() {
       return {
         userName: undefined,
-        usuarioLogado: {},
-        usuarioLogadoPerfil: false,
-        listaUsuarios: [],
-        listaUsuariosFiltrado: [],
-        selecionado: null,
-        form: {
-          usuario: null,
-          usuarioSelecionado: null,
+          // TODO - remover exemplo
+        usuarioLogado: {
+          DisplayName: 'Luiz Pompílio',
+          FirstName: 'Luiz',
+          Email: 'luizgdiniz@colegiovisaorecife.com.br',
+          profile: 1,
         },
-        updateSelect: 0,
       };
     },
-    computed: {
-      thumbnail() {
-        return avatarVazio;
-      },
-    },
-    mounted: function () {
-      document.querySelector('#searchInput').addEventListener('input', this.clearOptions);
-    },
-
     async created() {
-      await this.$api()
-        .get(`${config.jsonServer}/api/user/byEmail`, {
-          params: { email: this.$store.getters['auth/user'].Email },
-        })
-        .then((response) => {
-          const user = response.data;
-          this.usuarioLogado.DisplayName = user.nome;
-          this.usuarioLogado.FirstName = user.nome.split(' ')[0];
-          this.usuarioLogado.Email = user.email;
-          this.usuarioLogado.company = user.company;
-          this.usuarioLogado.profile = user.profile;
-        });
-      this.userName = this.usuarioLogado.FirstName;
+      // TODO - descomentar e deixar compatível com api
+      // await this.$api()
+      //   .get(`${config.jsonServer}/api/user/byEmail`, {
+      //     params: { email: this.$store.getters['auth/user'].Email },
+      //   })
+      //   .then((response) => {
+      //     const user = response.data;
+      //     this.usuarioLogado.DisplayName = user.nome;
+      //     this.usuarioLogado.FirstName = user.nome.split(' ')[0];
+      //     this.usuarioLogado.Email = user.email;
+      //     this.usuarioLogado.company = user.company;
+      //     this.usuarioLogado.profile = user.profile;
+      //   });
+      // this.userName = this.usuarioLogado.FirstName;
     },
     methods: {
       signOut() {

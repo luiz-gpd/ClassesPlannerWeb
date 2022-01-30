@@ -60,11 +60,10 @@ new Vue({
     this.$store.dispatch('auth/init');
   },
   created() {
-    // const token = this.$store.getters['auth/token'];
+    const token = this.$store.getters['auth/token'];
     const user = this.$store.getters['auth/user'];
 
-    // if (token && user) {
-    if (user) {
+    if (token && user) {
       this.$router.push({ name: 'home' }).catch(() => {});
     } else if (this.$router.app._route.name === 'recoverpassword') {
       this.$router.push({ name: 'recoverpassword' });

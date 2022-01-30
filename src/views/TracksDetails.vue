@@ -1,15 +1,18 @@
 <template>
   <div>
-    <div v-for="(activity, index) in this.selectedTrack.activities" :key="index">
+    <h2 class="title">Trilha {{selectedTrack.name}}</h2>
+    <div v-for="(activity, index) in selectedTrack.activities" :key="index">
       <!-- < v-if="index !== 0" seta /> -->
-      <div class="big-square" @click="openTrackModal(activity, index)">
+      <div class="container mt-5" @click="openTrackModal(activity)">
+      <div class="center">
         {{ activity.type }}
       </div>
+      </div>
     </div>
-    <modal name="activity-details" height="auto" :scrollable="true">
-      {{ selectedActivity.type }} {{ selectedActivity.description }}
-      <b-button variant="danger" v-on:click="$modal.hide('activity-details')">Pronto</b-button>
-    </modal>
+    <b-modal id="activity-details" height="auto" :scrollable="true" ok-only footerClass="border-top-0" :centered="true"
+    :title="selectedActivity.type.replace(selectedActivity.type.charAt(0), selectedActivity.type.charAt(0).toUpperCase())">
+      {{ selectedActivity.description }}
+    </b-modal>
   </div>
 </template>
 
@@ -24,17 +27,50 @@
     data() {
       return {
         loading: false,
-        selectedActivity: undefined,
+        selectedActivity: {
+          type: '',
+          description: '',
+        },
         selectedActivityIndex: 0,
       };
     },
-    async created() {},
+    async created() {
+      console.log(this.selectedTrack.activities);
+      console.log(this.loggedUser);
+    },
     methods: {
       openTrackModal(activity) {
+        console.log('entrou aqui')
         this.selectedActivity = activity;
+        this.$bvModal.show('activity-details')
       },
     },
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  border-radius: 30px;
+  height: 150px;
+  width: 248px;
+  position: relative;
+  border: 5px solid rgb(2, 2, 34);
+  cursor: pointer;
+}
+.center {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}
+.title {
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 50px;
+  }
+</style>

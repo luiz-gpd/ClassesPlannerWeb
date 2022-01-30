@@ -1,41 +1,46 @@
 <template>
+  <div class="background">
   <div class="centered-container">
-    <div>
+    <div class="white-background">
       <b-row>
-      <img src="logo_visao.jpg" alt="Logo Colégio Visão" />
+      <img class="logo center" src="../assets/logoVisao.png" alt="Logo Colégio Visão" />
       </b-row>
-      <div v-if="!recuperarSenha">
+      
+      <div v-if="!forgot">
       <b-row>
-        <b-input v-model="user.email" type="email" placeholder="exemplo@colegiovisaorecife.com.br" label="Email" :disabled="loading"></b-input>
+        <label>Email:</label>
+        <b-form-input v-model="user.email" type="email" placeholder="exemplo@colegiovisaorecife.com.br" :disabled="loading"></b-form-input>
+      </b-row>
+        <label>Senha:</label>
+      <b-row>
+        <b-form-input v-model="user.password" type="password" placeholder="Insira sua senha" label="Senha" :disabled="loading"></b-form-input>
       </b-row>
       <b-row>
-        <b-input v-model="user.passwordw" type="password" placeholder="Insira sua senha" label="Senha" :disabled="loading"></b-input>
+        <a class="forget-password" @click="forgotPassword()">Esqueci minha senha</a>
       </b-row>
-      <b-row>
-        <a class="forget-password" @click="forgetPassword()">Esqueci minha senha</a>
-      </b-row>
-        <b-button v-on:click="signIn()">Entrar</b-button>
+        <b-button variant="btn btn-primary" v-on:click="signIn()">Entrar</b-button>
       </div>
       <div v-else>
         <div style="text-align: center; margin-bottom: 20px">
-          <label>Esqueceu a senha?</label>
+          <strong>Esqueceu a senha?</strong>
         </div>
 
-        <b-input v-model="email" type="email" placeholder="exemplo@colegiovisaorecife.com.br" label="Email" :disabled="loading"></b-input>
+          <label>Informe seu login</label>
+        <b-form-input v-model="email" type="email" placeholder="exemplo@colegiovisaorecife.com.br" label="Email" :disabled="loading"></b-form-input>
 
         <div class="col-md-12">
           <div class="row">
             <div class="col-md-6">
-              <button class="btn backgroundgreen" @click="confirmResetPassword">Redefinir</button>
+              <button class="btn btn-success" @click="confirmResetPassword()">Redefinir</button>
             </div>
             <div class="col-md-6">
-              <button class="btn" @click="recuperarSenha = false">Cancelar</button>
+              <button class="btn btn-danger" @click="forgot = false">Cancelar</button>
             </div>
           </div>
         </div>
       </div>
+      </div>
     </div>
-    <!-- <div class="background" /> -->
   </div>
 </template>
 
@@ -47,7 +52,7 @@
       return {
         email: undefined,
         loading: true,
-        recuperarSenha: false,
+        forgot: false,
         user: {
           email: undefined,
           password: undefined,
@@ -56,7 +61,7 @@
     },
     created() {
       window.document.title = 'Trilhas Visão';
-      this.recuperarSenha = false;
+      this.forgot = false;
       this.loading = false;
     },
     methods: {
@@ -64,43 +69,47 @@
         this.forgot = true;
       },
       signIn() {
-        if (!this.email) {
-          //   MENSAGEM 'Informe um email válido
+        if (!this.user.email || !this.user.email.includes("@colegiovisaorecife.com.br")) {
+          this.error('Informe um email válido')
           return;
         }
-        if (!this.password) {
-          //   MENSAGEM 'Informe a senha.'
+        if (!this.user.password) {
+          this.error('Senha incorreta')
           return;
         }
-        this.$api()
-          .post(`${config.jsonServer}/api/user/signin`, this.user)
-          .then((response) => {
-            const user = response.data.user;
-            const token = response.data.token;
-            this.$store.dispatch('auth/setUser', user);
-            this.$store.dispatch('auth/setToken', token);
+        // TODO - descomentar e deixar compatível com api
+        // this.$api()
+        //   .post(`${config.jsonServer}/api/user/signin`, this.user)
+        //   .then((response) => {
+        //     const user = response.data.user;
+        //     const token = response.data.token;
+        //     this.$store.dispatch('auth/setUser', user);
+        //     this.$store.dispatch('auth/setToken', token);
             this.$router.push({ name: 'home' });
-          })
-          .catch(() => {
-            // MENSAGEM 'Mensagem vinda do banco ou Usuário não encontrado'
-          });
+          // })
+          // .catch((err) => {
+          //   this.error(err || 'Usuário não encontrado')
+          // });
       },
       confirmResetPassword() {
-          if (this.email) {
-          this.$api()
-            .post(`${config.jsonServer}/api/userToken/createToken`, { email: this.email })
-            .then((response) => {
-              this.$api()
-                .get(`${config.jsonServer}/api/userToken/sendEmailForgetPassword?email=${this.email}&token=${response.data._id}`)
-                .then(() => {
-                  this.recuperarSenha = false;
-                  // MENSAGEM BOA --> 'Foi enviado um e-mail para você com instruções para mudar a senha.
-                })
-                .catch(() => {})// MENSAGEM --> Erro ao enviar email`
-            })
-            // MENSAGEM --> 'Erro na recuperação de senha!'
+        // TODO - descomentar e deixar compatível com api
+          if (this.email && this.email.includes("@colegiovisaorecife.com.br")) {
+          // this.$api()
+          //   .post(`${config.jsonServer}/api/userToken/createToken`, { email: this.email })
+          //   .then((response) => {
+          //     this.$api()
+          //       .get(`${config.jsonServer}/api/userToken/sendEmailForgetPassword?email=${this.email}&token=${response.data._id}`)
+          //       .then(() => {
+          //         this.forgot = false;
+                  this.success('Foi enviado um e-mail para você com instruções para mudar a senha')
+          //       })
+          //       .catch((err) => {
+          //         this.error(err || 'Erro ao enviar email')
+          //       })
+          //   })
+          //   this.error('Erro na recuperação de senha')
         } else {
-          // MENSAGEM --> 'Preencha seu Email.'
+          this.warning('Informe um email válido')
         }
       }
     },
@@ -108,16 +117,21 @@
 </script>
 
 <style scoped>
+.center {
+  margin: auto;
+  width:50%;
+  padding: 10px;
+}
 .centered-container {
   border-radius: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
-  padding: 50px;
+  padding: 100px;
   }
   .background {
-    background-color: #0AE0FA;
+    background-color: #4089e7;
     position: absolute;
     height: 100%;
     width: 100%;
@@ -127,9 +141,23 @@
     left: 0;
     z-index: 0;
   }
+  .white-background {
+    width: 35%;
+    border-radius: 50px;
+    padding-top: 40%;
+    background-color: #ffffff;
+    position: relative;
+  }
   .forget-password {
+    font-size: 15px;
     color: red;
     text-decoration: underline;
     text-decoration: red;
+    cursor: pointer;
+  }
+  .logo{
+    width:200px;
+    position: relative;
+    top: -670px;
   }
 </style>
