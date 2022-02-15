@@ -5,37 +5,52 @@
       <b-row>
       <img class="logo center" src="../assets/logoVisao.png" alt="Logo Colégio Visão" />
       </b-row>
+        <br/>
+        <br/>
       
-      <div v-if="!forgot">
+      <div v-if="!forgot" class="inputs center">
       <b-row>
         <label>Email:</label>
-        <b-form-input v-model="user.email" type="email" placeholder="exemplo@colegiovisaorecife.com.br" :disabled="loading"></b-form-input>
+        <b-form-input :state="isValidEmail" v-model="user.email" @change="validateEmail()" type="email" placeholder="exemplo@colegiovisaorecife.com.br" :disabled="loading"></b-form-input>
+        <p v-if="isValidEmail === false" class="under-input">O email deve pertencer ao domínio do colégio visão</p>
       </b-row>
+        <br/>
+        <br/>
+      <b-row>
         <label>Senha:</label>
-      <b-row>
-        <b-form-input v-model="user.password" type="password" placeholder="Insira sua senha" label="Senha" :disabled="loading"></b-form-input>
+        <b-form-input :state="isValidPassword" @change="validatePassword()" v-model="user.password" type="password" placeholder="Insira sua senha" label="Senha" :disabled="loading"></b-form-input>
+        <p v-if="isValidPassword === false" class="under-input">Informe a senha</p>
       </b-row>
+        <br/>
+        <br/>
       <b-row>
+        <b-col lg='8'>
         <a class="forget-password" @click="forgotPassword()">Esqueci minha senha</a>
-      </b-row>
+        </b-col>
+        <b-col lg='4'>
         <b-button variant="btn btn-primary" v-on:click="signIn()">Entrar</b-button>
+        </b-col>
+      </b-row>
       </div>
       <div v-else>
-        <div style="text-align: center; margin-bottom: 20px">
+        <div style="text-align: center; margin-bottom: 20px" class="center-on-block inputs">
           <strong>Esqueceu a senha?</strong>
         </div>
-
-          <label>Informe seu login</label>
-        <b-form-input v-model="email" type="email" placeholder="exemplo@colegiovisaorecife.com.br" label="Email" :disabled="loading"></b-form-input>
-
-        <div class="col-md-12">
-          <div class="row">
-            <div class="col-md-6">
-              <button class="btn btn-success" @click="confirmResetPassword()">Redefinir</button>
-            </div>
-            <div class="col-md-6">
-              <button class="btn btn-danger" @click="forgot = false">Cancelar</button>
-            </div>
+        <div class="inputs center">
+          <label>Informe seu login:</label>
+          <br/>
+          <br/>
+          <b-form-input v-model="email" type="email" placeholder="exemplo@colegiovisaorecife.com.br" label="Email" :disabled="loading"></b-form-input>
+          <br/>
+          <div>
+            <b-row>
+              <b-col lg="6" class="pl-4">
+                <button class="btn btn-success" @click="confirmResetPassword()">Gerar nova senha</button>
+              </b-col>
+              <b-col lg="6" class="pl-4">
+                <button class="btn btn-danger" @click="forgot = false">Cancelar</button>
+              </b-col>
+            </b-row>
           </div>
         </div>
       </div>
@@ -45,11 +60,13 @@
 </template>
 
 <script>
-  import config from '../helpers/generalConfig';
+import config from '../helpers/generalConfig';
 
   export default {
     data() {
       return {
+        isValidEmail: null,
+        isValidPassword: null,
         email: undefined,
         loading: true,
         forgot: false,
@@ -68,28 +85,35 @@
       forgotPassword() {
         this.forgot = true;
       },
-      signIn() {
+      async signIn() {
         if (!this.user.email || !this.user.email.includes("@colegiovisaorecife.com.br")) {
           this.error('Informe um email válido')
           return;
         }
+          this.isValidEmail = null;
         if (!this.user.password) {
           this.error('Senha incorreta')
           return;
         }
-        // TODO - descomentar e deixar compatível com api
-        // this.$api()
-        //   .post(`${config.jsonServer}/api/user/signin`, this.user)
-        //   .then((response) => {
-        //     const user = response.data.user;
-        //     const token = response.data.token;
-        //     this.$store.dispatch('auth/setUser', user);
-        //     this.$store.dispatch('auth/setToken', token);
+        this.$api()
+        // TODO aqui deveria ser a rota de login, mas tô recebendo badRequest
+          .get(`${config.jsonServer}/users`)
+          .then((response) => {
+            console.log(response);
+            // const user = response.data.user;
+            const user = response.data[1];
+            // const token = response.data.token;
+            this.$store.dispatch('auth/setUser', user);
+            // this.$store.dispatch('auth/setToken', token);
             this.$router.push({ name: 'home' });
-          // })
-          // .catch((err) => {
-          //   this.error(err || 'Usuário não encontrado')
-          // });
+          })
+          .catch((error) => {
+            console.log(error)
+            console.log(error.response)
+            console.log(error.request)
+            console.log(error.message)
+            this.error(error || 'Usuário não encontrado')
+          });
       },
       confirmResetPassword() {
         // TODO - descomentar e deixar compatível com api
@@ -111,6 +135,20 @@
         } else {
           this.warning('Informe um email válido')
         }
+      },
+      validateEmail() {
+        if(!this.user.email || !this.user.email.includes("@colegiovisaorecife.com.br")) {
+          this.isValidEmail = false;
+        } else {
+          this.isValidEmail = null;
+        }
+      },
+      validatePassword() {
+        if(!this.user.password) {
+          this.isValidPassword = false;
+        } else {
+          this.isValidPassword = null;
+        }
       }
     },
   };
@@ -119,8 +157,10 @@
 <style scoped>
 .center {
   margin: auto;
-  width:50%;
-  padding: 10px;
+}
+.center-on-block {
+  margin: auto;
+  position:absolute;
 }
 .centered-container {
   border-radius: 20px;
@@ -142,9 +182,9 @@
     z-index: 0;
   }
   .white-background {
-    width: 35%;
+    width: 500px;
     border-radius: 50px;
-    padding-top: 40%;
+    padding-top: 166px;
     background-color: #ffffff;
     position: relative;
   }
@@ -152,12 +192,20 @@
     font-size: 15px;
     color: red;
     text-decoration: underline;
-    text-decoration: red;
     cursor: pointer;
+  }
+  .under-input {
+    color:red;
+    font-size: 13px;
   }
   .logo{
     width:200px;
     position: relative;
-    top: -670px;
+    top: -150px
+  }
+  .inputs {
+    position: relative;
+    top: -130px;
+    max-width: 360px;
   }
 </style>

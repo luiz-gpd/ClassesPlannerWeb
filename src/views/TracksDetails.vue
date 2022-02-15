@@ -2,7 +2,8 @@
   <div>
     <h2 class="title">Trilha {{selectedTrack.name}}</h2>
     <div v-for="(activity, index) in selectedTrack.activities" :key="index">
-      <!-- < v-if="index !== 0" seta /> -->
+      <img src="../assets/leftArrow.png" v-if="index !== 0 && index%2" class="arrow-l"/>
+      <img src="../assets/rightArrow.png" v-if="index !== 0 && index%2 === 0" class="arrow-r"/>
       <div class="container mt-5" @click="openTrackModal(activity)">
       <div class="center">
         {{ activity.type }}
@@ -51,8 +52,8 @@
 <style scoped>
 .container {
   border-radius: 30px;
-  height: 150px;
-  width: 248px;
+  height: 130px;
+  width: 220px;
   position: relative;
   border: 5px solid rgb(2, 2, 34);
   cursor: pointer;
@@ -72,5 +73,15 @@
   justify-content: center;
   position: relative;
   padding-top: 50px;
+  }
+  .arrow-l {
+    height: 120px;
+    margin: -50px, auto;
+    position: absolute;
+  }
+  .arrow-r {
+    height: 120px;
+    margin: -50px, auto;
+    position: absolute;
   }
 </style>

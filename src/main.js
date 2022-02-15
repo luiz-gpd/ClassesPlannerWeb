@@ -17,8 +17,8 @@ import App from '@/App.vue';
 import router from '@/router';
 import store from '@/store';
 import variables from '@/variables';
-import NProgressPlugin from '@/plugins/nprogress.plugin';
-import AxiosPlugin from '@/plugins/axios.plugin';
+import NProgressPlugin from '../src/plugins/nprogress.plugin';
+import AxiosPlugin from '../src/plugins/axios.plugin';
 import AuthMixin from '@/mixins/auth.mixin';
 import UserProfileHeader from '@/components/UserProfileHeader.vue';
 import { VueMaskDirective } from 'v-mask';
@@ -60,10 +60,10 @@ new Vue({
     this.$store.dispatch('auth/init');
   },
   created() {
-    const token = this.$store.getters['auth/token'];
+    // const token = this.$store.getters['auth/token'];
     const user = this.$store.getters['auth/user'];
 
-    if (token && user) {
+    if (user) {
       this.$router.push({ name: 'home' }).catch(() => {});
     } else if (this.$router.app._route.name === 'recoverpassword') {
       this.$router.push({ name: 'recoverpassword' });

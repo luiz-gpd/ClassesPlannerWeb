@@ -1,19 +1,42 @@
 <template>
-  <div>
+   <div>
+    <br/>
+    <br/>
     <div v-if="!selectedTrack">
-    <h1>Olá {{ loggedUser.name }}</h1>
-    <div v-for="(track, index) in tracks" :key="index" @click="seeTrack(track)">{{ track.name }} - {{ track.turma }} - {{ track.disciplina }} - {{ track.creator.name}}</div>
-    <button v-if="loggedUser.profile === 1" @click="createTrack">Criar Nova trilha</button>
+      <b-row>
+      <b-col>
+    <h1>Olá {{ loggedUser.exibitionName }}!</h1>
+      </b-col>
+      <b-col>
+    <b-popover target="createTrack" triggers="hover" variant="light" placement="left">
+            Criar Nova Trilha
+          </b-popover>
+          <div class="plus-btn" @click="createTrack()" id="createTrack">
+            <div class="vertical-block"></div>
+            <div class="horizontal-block"></div>
+          </div>
+      </b-col>
+      </b-row>
+    <div v-for="(track, index) in tracks" :key="index" class="center">
+    <b-card no-body @click="seeTrack(track)" style="width: 16rem;" :class="`mr-4 mt-4 tables`"
+    :header="track.name" :border-variant="colors[index%7]" :header-bg-variant="colors[index%7]" :header-text-variant="colors[index] === 'light'? '' : 'white'">
+    <b-list-group>
+      <b-list-group-item><b-icon icon="award" :variant="colors[index%7]"/> {{ track.turma }} </b-list-group-item>
+      <b-list-group-item><b-icon icon="file-earmark-richtext" :variant="colors[index%7]"/> {{ track.disciplina }} </b-list-group-item>
+      <b-list-group-item><b-icon icon="person-fill" :variant="colors[index%7]"/> {{ track.creator.name}} </b-list-group-item>
+      <b-list-group-item><b-icon icon="calendar3" :variant="colors[index%7]"/> {{ track.createdAt}} </b-list-group-item>
+    </b-list-group>
+    </b-card>
+    </div>
     </div>
     <div v-else>
       <TrackDetails :loggedUser="loggedUser" :selectedTrack="selectedTrack"></TrackDetails>
       <b-button v-on:click="selectedTrack=undefined" >Voltar</b-button>
     </div>
-  </div>
+  </div> 
 </template>
 
 <script>
-  import config from '../helpers/generalConfig';
   import TrackDetails from './TracksDetails.vue';
 
   export default {
@@ -22,68 +45,30 @@
     },
     data() {
       return {
-        // TODO - remover exemplo
-        loggedUser: {
-          name: 'Luiz Pompílio',
-          profile: 1,
-        },
-        // TODO - remover exemplo
-        tracks: [
-          {
-            name: 'Teste 1',
-            turma: '5º ano',
-            disciplina: 'Matemática',
-            objectives: 'Desenvolver Lógica',
-            associatedHabilities: 'Nenhuma',
-            activities: [{
-              type: 'vídeo',
-              description: 'um vídeo super legal e atrativo'
-            },{
-              type: 'seminário',
-              description: 'fazendo os alunos trabalharem'
-            }],
-            observation: '',
-            creator: {
-              name: 'Tio Rico'
-            }
-          },
-          {
-            name: 'Teste 2',
-            turma: '5º ano',
-            disciplina: 'Matemática',
-            objectives: 'Educação Financeira',
-            creator: {
-              name: 'Luiz Gustavo'
-            }
-          }
-        ],
+        loggedUser: undefined,
+        tracks: [],
         selectedTrack: undefined,
         // TODO - ADICIONAR, EM TODAS AS TELAS QUE PRECISEM, A PARTE DE LOADING
         loading: false,
+        colors: ['info', 'danger', 'secondary', 'warning', 'success', 'dark', 'light']
       };
     },
     async created() {
-      // TODO - descomentar e deixar compatível com api
-        // await this.$api()
-        //   .get(`${config.jsonServer}/api/user/byEmail`, {
-        //     params: { email: this.$store.getters['auth/user'].Email },
-        //   })
-        //   .then((response) => {
-        //     this.loggedUser = response.data;
-        //   });
+      this.loggedUser = this.$store.getters['auth/user'];
       await this.getTracks();
     },
     methods: {
       async getTracks() {
         // TODO - descomentar e deixar compatível com api
-        // await this.$api()
-        //   .get(`${config.jsonServer}/api/tracks/byUser/${this.loggedUser._id}`)
-        //   .then((response) => {
-        //     this.tracks = response.data;
-        //   })
-        //   .catch(() => {
-        //     this.error('Erro ao encontrar trilhas existentes')
-        //   });
+        await this.$api()
+          .get(`users/${this.loggedUser._id}`)
+          .then((response) => {
+            console.log(response.data)
+            this.tracks = response.data[0].tracks;
+          })
+          .catch(() => {
+            this.error('Erro ao encontrar trilhas existentes')
+          });
       },
       createTrack() {
         this.$router.push({ name: `trilha/0` });
@@ -95,4 +80,53 @@
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+@import url('https://fonts.googleapis.com/css?family=Klainy&display=swap');
+h1 {
+  font-family: graphit;
+  font-weight: bold;
+  color: #4089e7;
+}
+.tables {
+  cursor:pointer;
+  margin-left: 30px;
+  float: left;
+  display: flex;
+}
+.center {
+  margin: auto;
+}
+.plus-btn {
+  display:block;
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+  border: 1px solid #000F63;
+  background-color: #000F63;
+  cursor: pointer;
+  align-items: center;
+  float: right;
+  margin-right: 10%;
+}
+.vertical-block {
+  display:block;
+  top: 7px;
+  height: 52px;
+  width: 15px;
+  border-radius: 5%;
+  background-color: white;
+  margin: auto;
+  position:relative;
+}
+.horizontal-block {
+  display:block;
+  top: -25px;
+  left: 8px;
+  height: 15px;
+  width: 52px;
+  border-radius: 5%;
+  background-color: white;
+  position:relative;
+}
+
+</style>

@@ -69,6 +69,7 @@
     .navbar .dropdown .dropdown-menu,
     .navbar .dropdown.show .dropdown-menu {
       background-color: white;
+      color: white;
       border: 0;
       padding-bottom: 15px;
       -webkit-transition: none;

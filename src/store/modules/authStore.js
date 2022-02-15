@@ -42,16 +42,13 @@ const AuthModule = {
      */
     setUser(context, newUser) {
       if (newUser) {
+        const names = newUser.name.split(' ');
         const user = {
-          Id: newUser.id,
-          FirstName: newUser.first_name,
-          LastName: newUser.last_name,
-          Email: newUser.email,
-          Profile: newUser.profile,
+          _id: newUser._id,
+          exibitionName: `${names[0]} ${names[names.length - 1]}`,
+          email: newUser.email,
+          profile: newUser.profile,
         };
-        if (user.PictureUrl) {
-          user.PictureUrl = user.PictureUrl.substring(0, user.PictureUrl.indexOf('?'));
-        }
 
         context.commit('setUser', user);
       } else {
