@@ -19,6 +19,7 @@ import store from '@/store';
 import variables from '@/variables';
 import NProgressPlugin from '../src/plugins/nprogress.plugin';
 import AxiosPlugin from '../src/plugins/axios.plugin';
+import BaseInput from '@/components/inputs/BaseInput.vue';
 import AuthMixin from '@/mixins/auth.mixin';
 import UserProfileHeader from '@/components/UserProfileHeader.vue';
 import { VueMaskDirective } from 'v-mask';
@@ -39,6 +40,7 @@ Vue.use(VueJwtDecode);
 
 Vue.config.productionTip = false;
 Vue.component('v-select', vSelect);
+Vue.component(BaseInput.name, BaseInput);
 Vue.component('Pagination', Pagination);
 Vue.component(UserProfileHeader.name, UserProfileHeader);
 Vue.component('validation-provider', ValidationProvider);
@@ -60,10 +62,10 @@ new Vue({
     this.$store.dispatch('auth/init');
   },
   created() {
-    // const token = this.$store.getters['auth/token'];
+    const token = this.$store.getters['auth/token'];
     const user = this.$store.getters['auth/user'];
 
-    if (user) {
+    if (user && token) {
       this.$router.push({ name: 'home' }).catch(() => {});
     } else if (this.$router.app._route.name === 'recoverpassword') {
       this.$router.push({ name: 'recoverpassword' });

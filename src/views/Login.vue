@@ -96,23 +96,16 @@ import config from '../helpers/generalConfig';
           return;
         }
         this.$api()
-        // TODO aqui deveria ser a rota de login, mas tô recebendo badRequest
-          .get(`${config.jsonServer}/users`)
+          .post(`${config.jsonServer}/login`, this.user)
           .then((response) => {
-            console.log(response);
-            // const user = response.data.user;
-            const user = response.data[1];
-            // const token = response.data.token;
+            const user = response.data.user;
+            const acessToken = response.data.acessToken;
             this.$store.dispatch('auth/setUser', user);
-            // this.$store.dispatch('auth/setToken', token);
+            this.$store.dispatch('auth/setToken', acessToken);
             this.$router.push({ name: 'home' });
           })
-          .catch((error) => {
-            console.log(error)
-            console.log(error.response)
-            console.log(error.request)
-            console.log(error.message)
-            this.error(error || 'Usuário não encontrado')
+          .catch(() => {
+            this.error('Usuário não encontrado')
           });
       },
       confirmResetPassword() {

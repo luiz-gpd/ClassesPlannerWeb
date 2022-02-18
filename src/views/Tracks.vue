@@ -1,74 +1,149 @@
 <template>
   <div>
-    <b-tabs pills lazy>
-        <b-tab active>
-            <template v-slot:title><em class="ni ni-cloud-upload-96 mr-2"></em> Visualizar Trilha</template>
-            <CreateEdit :loggedUser="loggedUser" :isCreate="isCreate" :selectedTrack="selectedTrack"></CreateEdit>
-        </b-tab>
+    <b-form @submit="onSubmit" @reset="onReset">
+      <div class="col-md-12">
+      <div class="row">
+      <div class="col-md-6">
+      <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
+        <b-form-input
+          id="input-2"
+          v-model="newActivity.description"
+          placeholder="Descrição"
+          required
+        ></b-form-input>
+      </b-form-group>
+
+      </div>
+      <div class="col-md-6">
+      <b-form-group id="input-group-3" label="Food:" label-for="input-3">
+        <b-form-select
+          id="input-3"
+          v-model="newActivity.type"
+          :options="options"
+          required
+        ></b-form-select>
+      </b-form-group>
+      </div>
+      </div>
+      </div>
+
+      <!-- <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
+        <b-form-checkbox-group
+          v-model="form.checked"
+          id="checkboxes-4"
+          :aria-describedby="ariaDescribedby"
+        >
+          <b-form-checkbox value="me">Check me out</b-form-checkbox>
+          <b-form-checkbox value="that">Check that out</b-form-checkbox>
+        </b-form-checkbox-group>
+      </b-form-group> -->
+
+      <b-button type="submit" variant="primary">Salvar</b-button>
+      <b-button type="reset" variant="danger">Limpar</b-button>
+    </b-form>
+    <br/>
+    <b-table class="tablez" striped head-variant="dark" bordered hover: :items="selectedTrack.activities"></b-table>
   </div>
 </template>
 
 <script>
-  import config from '../helpers/generalConfig';
-  import CreateEdit from './CreateEdit.vue'
-
   export default {
-      components: {
-          CreateEdit,
-      },
     data() {
       return {
         loggedUser: undefined,
-        selectedTrack: undefined,
+        newActivity: {
+          type: '',
+          description: '',
+        },
+        selectedTrack: {
+          turma : '',
+          disciplina : '',
+          objectives : '',
+          associatedHabilities : [],
+          tableData: [],
+          activities : [
+            {
+              index: '0',
+              type: '1',
+              description: '2',
+            },
+            {
+              index: '1',
+              type: '3',
+              description: '4',
+            }
+          ],
+          observation : '',
+        },
+        options: ['1', '2', '3'],
         loading: false,
         isCreate: false,
       };
     },
     async created() {
-      await this.carregarUsuario().then((response) => {
-        this.loggedUser = response || {};
-      });
-      //   await this.$api()
-      //     .get(`${config.jsonServer}/api/user/byEmail`, {
-      //       params: { email: this.$store.getters['auth/user'].Email },
-      //     })
-      //     .then((response) => {
-      //       this.usuarioLogado = response.data;
-      //     });
+      this.loggedUser = this.$store.getters['auth/user'];
       await this.getTrack();
     },
     methods: {
       async getTrack() {
-          if (this.$router.app._route.params.trackId === '0') {
+          if (!this.$router.app._route.params.trackId || this.$router.app._route.params.trackId === '0') {
               this.isCreate = true;
           } else {
             await this.$api()
-          .get(`${config.jsonServer}/api/track/one/${this.$router.app._route.params.trackId}`)
+          .get(`tracks/${this.$router.app._route.params.trackId}`)
           .then((response) => {
               this.selectedTrack = response.data;
+              this.organizeTable();
           })
           .catch(() => {
-              // MENSAGEM 'Erro ao encontrar trilhas existentes'
+              this.error('Erro ao encontrar trilha')
           });
         }
       },
-      async carregarUsuario() {
-        return new Promise((resolve, reject) => {
-          const user = this.$store.getters['auth/user'];
-          this.$api()
-            .get(`${config.jsonServer}/api/user/byEmail?email=${user.Email}`)
-            .then((response) => resolve(response.data))
-            .catch(() => {
-              this.error('Erro ao consultar usuário logado.');
-              this.$store.dispatch('auth/setUser', undefined);
-              this.$store.dispatch('auth/setToken', undefined);
-              this.$router.push({ name: 'login' });
-              reject();
-            });
-        });
+      async onSubmit() {
+        this.selectedTrack.activities.push(this.newActivity);
+        if (this.isCreate) {
+          await this.$api()
+          .post(`tracks`, this.selectedTrack)
+          .then((response) => {
+              this.selectedTrack = response.data;
+              this.organizeTable();
+          })
+          .catch(() => {
+              this.error('Erro ao encontrar trilha')
+          });
+        } else {
+          await this.$api()
+          .put(`tracks`, this.selectedTrack)
+          .then((response) => {
+              this.selectedTrack = response.data;
+              this.organizeTable();
+          })
+          .catch(() => {
+              this.error('Erro ao encontrar trilha')
+          });
+        }
       },
+      async onReset() {
+
+      },
+      organizeTable() {
+        const data = []
+        this.selectedTrack.activities.map((e, index) => {
+          data.push({
+            passo: index,
+            tipo: e.type,
+            descricao: e.description
+          });
+        });
+        this.tableData = data;
+      }
     },
   };
 </script>
 
-<style scoped></style>
+<style scoped>
+.tablez {
+  border-radius: 10%;
+}
+</style>

@@ -63,15 +63,15 @@
         await this.$api()
           .get(`users/${this.loggedUser._id}`)
           .then((response) => {
-            console.log(response.data)
             this.tracks = response.data[0].tracks;
           })
-          .catch(() => {
+          .catch((e) => {
+            console.log(e);
             this.error('Erro ao encontrar trilhas existentes')
           });
       },
       createTrack() {
-        this.$router.push({ name: `trilha/0` });
+        this.$router.push(`/track/0`);
       },
       seeTrack(track) {
         this.selectedTrack = track;

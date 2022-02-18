@@ -24,8 +24,6 @@
   </div>
 </template>
 <script>
-  import config from '../helpers/generalConfig';
-
   export default {
     name: 'user-profile-header',
     data() {
@@ -41,20 +39,12 @@
       };
     },
     async created() {
-      // TODO - descomentar e deixar compatível com api
-      // await this.$api()
-      //   .get(`${config.jsonServer}/api/user/byEmail`, {
-      //     params: { email: this.$store.getters['auth/user'].Email },
-      //   })
-      //   .then((response) => {
-      //     const user = response.data;
-      //     this.usuarioLogado.DisplayName = user.nome;
-      //     this.usuarioLogado.FirstName = user.nome.split(' ')[0];
-      //     this.usuarioLogado.Email = user.email;
-      //     this.usuarioLogado.company = user.company;
-      //     this.usuarioLogado.profile = user.profile;
-      //   });
-      // this.userName = this.usuarioLogado.FirstName;
+      const user = this.$store.getters['auth/user'];
+      this.usuarioLogado.DisplayName = user.exibitionName;
+      this.usuarioLogado.FirstName = user.exibitionName.split(' ')[0];
+      this.usuarioLogado.Email = user.email;
+      this.usuarioLogado.profile = user.profile;
+      this.userName = this.usuarioLogado.FirstName;
     },
     methods: {
       signOut() {
