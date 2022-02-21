@@ -11,7 +11,7 @@
     <b-popover target="createTrack" triggers="hover" variant="light" placement="left">
             Criar Nova Trilha
           </b-popover>
-          <div class="plus-btn" @click="createTrack()" id="createTrack">
+          <div v-if="loggedUser.profile === 1" class="plus-btn" @click="createTrack()" id="createTrack">
             <div class="vertical-block"></div>
             <div class="horizontal-block"></div>
           </div>
@@ -32,6 +32,7 @@
     <div v-else>
       <TrackDetails :loggedUser="loggedUser" :selectedTrack="selectedTrack"></TrackDetails>
       <b-button v-on:click="selectedTrack=undefined" >Voltar</b-button>
+      <b-button class="ml-2" v-if="loggedUser.profile===1" v-on:click="editTrack()" >Editar Trilha</b-button>
     </div>
   </div> 
 </template>
@@ -61,7 +62,7 @@
       async getTracks() {
         // TODO - descomentar e deixar compatível com api
         await this.$api()
-          .get(`tracks/filter/${this.loggedUser._id}`)
+          .get(`home/tracks`)
           .then((response) => {
             this.tracks = response.data;
           })
@@ -76,6 +77,9 @@
       seeTrack(track) {
         this.selectedTrack = track;
       },
+      editTrack() {
+        this.$router.push(`track/${this.selectedTrack._id}`)
+      }
     },
   };
 </script>

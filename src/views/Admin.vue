@@ -172,7 +172,7 @@
                       <b-icon
                       icon="x-square-fill"
                         class="btn btn-warning"
-                        @click="sendWelcomeMail(user)"
+                        @click="deleteUser(user)"
                         v-b-tooltip.hover.v-light
                         title="Excluir"
                       />
@@ -200,7 +200,7 @@
     <b-modal id="modal-center" name="import-user" height="auto" style="padding-top: 25vh" :scrollable="true">
       <!-- <ImportUserCSV></ImportUserCSV> -->
     </b-modal>
-    <modal name="form-user" height="auto" :scrollable="true">
+    <modal name="form-user" @hidden="loadUsers()" height="auto" :scrollable="true">
       <UserForm :user="usuarioSelecionado"></UserForm>
     </modal>
     <v-dialog />
@@ -311,6 +311,19 @@
         // }
         return query;
       },
+      async deleteUser(user) {
+        console.log(user)
+        this.$api()
+            .delete(`users/${user._id}`)
+            .then((response) => {
+              console.log(response)
+              this.loadUsers()
+            })
+            .catch((e) => {
+                console.log(e);
+              this.error('Erro ao excluir usuário')
+            });
+      }
     },
   };
 </script>

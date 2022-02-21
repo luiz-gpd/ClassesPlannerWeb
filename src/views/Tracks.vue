@@ -1,6 +1,72 @@
 <template>
   <div>
-    <b-form @submit="onSubmit" @reset="onReset">
+    <b-form>
+      <div class="col-md-12">
+      <div class="row">
+      <div class="col-md-3">
+      <b-form-group id="input-group-3" label="Segmento:" label-for="segmento">
+        <b-form-select
+          id="segmento"
+          v-model="selectedTrack.segmento"
+          :options="options"
+          required
+        ></b-form-select>
+      </b-form-group>
+      </div>
+      <div class="col-md-3">
+      <b-form-group id="input-group-3" label="Turma:" label-for="turma">
+        <b-form-select
+          id="turma"
+          v-model="selectedTrack.turma"
+          :options="options"
+          required
+        ></b-form-select>
+      </b-form-group>
+      </div>
+      <div class="col-md-3">
+      <b-form-group id="input-group-3" label="Objetivos:" label-for="objectives">
+        <b-form-input
+          id="objectives"
+          v-model="selectedTrack.objectives"
+          required
+        ></b-form-input>
+      </b-form-group>
+      </div>
+      <div class="col-md-3">
+      <b-form-group id="input-group-3" :label="`Habilidade Associadas: ${selectedTrack.associatedHabilities}`" label-for="associatedHabilities">
+        <b-form-select
+          id="associatedHabilities"
+          v-model="selectedTrack.associatedHabilities"
+          :options="options"
+          required
+          multiple
+          :select-size="4"
+        ></b-form-select>
+      </b-form-group>
+      </div>
+      </div>
+      </div>
+      <div class="col-md-12">
+      <div class="row">
+      <div class="col-md-12">
+      <b-form-group id="input-group-2" label="Observação:" label-for="observation">
+        <b-form-input
+          id="observation"
+          v-model="newActivity.observation"
+          placeholder="Observação"
+        ></b-form-input>
+      </b-form-group>
+      </div>
+      </div>
+      </div>
+    </b-form>
+
+    <br/>
+    <br/>
+    <br/>
+    <br/>
+    
+    <b-form @reset="onReset">
       <div class="col-md-12">
       <div class="row">
       <div class="col-md-6">
@@ -26,6 +92,9 @@
       </div>
       </div>
       </div>
+      <b-button type="button" @click="onSubmit" variant="primary">Adicionar atividade</b-button>
+      <b-button type="reset" class='ml-2' variant="danger">Limpar</b-button>
+    </b-form>
 
       <!-- <b-form-group id="input-group-4" v-slot="{ ariaDescribedby }">
         <b-form-checkbox-group
@@ -38,11 +107,10 @@
         </b-form-checkbox-group>
       </b-form-group> -->
 
-      <b-button type="submit" variant="primary">Salvar</b-button>
-      <b-button type="reset" variant="danger">Limpar</b-button>
-    </b-form>
     <br/>
-    <b-table class="tablez" striped head-variant="dark" bordered hover: :items="selectedTrack.activities"></b-table>
+      <b-button type="submit" @click="save()" variant="primary">Salvar</b-button>
+    <br/>
+    <b-table class="tablez" striped head-variant="dark" bordered hover: :items="tableData"></b-table>
   </div>
 </template>
 
@@ -88,11 +156,14 @@
       async getTrack() {
           if (!this.$router.app._route.params.trackId || this.$router.app._route.params.trackId === '0') {
               this.isCreate = true;
+              this.organizeTable();
           } else {
+            console.log(`veio aqui`)
             await this.$api()
           .get(`tracks/${this.$router.app._route.params.trackId}`)
           .then((response) => {
-              this.selectedTrack = response.data;
+            this.selectedTrack = response.data[0];
+            console.log(this.selectedTrack)
               this.organizeTable();
           })
           .catch(() => {
@@ -100,38 +171,54 @@
           });
         }
       },
-      async onSubmit() {
-        this.selectedTrack.activities.push(this.newActivity);
+      async save() {
         if (this.isCreate) {
           await this.$api()
           .post(`tracks`, this.selectedTrack)
           .then((response) => {
               this.selectedTrack = response.data;
               this.organizeTable();
+              this.success(`Nova trilha salva com sucesso`)
           })
           .catch(() => {
-              this.error('Erro ao encontrar trilha')
+            this.error('Erro ao encontrar trilha')
           });
         } else {
           await this.$api()
           .put(`tracks`, this.selectedTrack)
           .then((response) => {
-              this.selectedTrack = response.data;
+            this.selectedTrack = response.data;
               this.organizeTable();
+            this.success(`Alteracao realizada com sucesso`)
           })
           .catch(() => {
               this.error('Erro ao encontrar trilha')
           });
         }
       },
-      async onReset() {
-
+      onSubmit() {
+        this.selectedTrack.activities.push({
+          type: this.newActivity.type,
+          description: this.newActivity.description,
+          index: this.selectedTrack.activities.length,
+        });
+        this.organizeTable();
+        this.newActivity = {
+          type: '',
+          description: '',
+        };
+      },
+      onReset() {
+        this.newActivity = {
+          type: '',
+          description: '',
+        };
       },
       organizeTable() {
         const data = []
         this.selectedTrack.activities.map((e, index) => {
           data.push({
-            passo: index,
+            passo: index+1,
             tipo: e.type,
             descricao: e.description
           });

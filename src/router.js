@@ -40,7 +40,7 @@ export default new Router({
           component: Reports,
         },
         {
-          path: '/track/:idTrack',
+          path: '/track/:trackId',
           name: 'track',
           component: Tracks,
         },
