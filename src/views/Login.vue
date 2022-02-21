@@ -98,7 +98,7 @@ import config from '../helpers/generalConfig';
         this.$api()
           .post(`${config.jsonServer}/login`, this.user)
           .then((response) => {
-            const user = response.data.user;
+            const user = response.data.user
             const acessToken = response.data.acessToken;
             this.$store.dispatch('auth/setUser', user);
             this.$store.dispatch('auth/setToken', acessToken);

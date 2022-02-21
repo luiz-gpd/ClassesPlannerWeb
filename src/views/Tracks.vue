@@ -4,24 +4,24 @@
       <div class="col-md-12">
       <div class="row">
       <div class="col-md-6">
-      <b-form-group id="input-group-2" label="Your Name:" label-for="input-2">
-        <b-form-input
-          id="input-2"
-          v-model="newActivity.description"
-          placeholder="Descrição"
-          required
-        ></b-form-input>
-      </b-form-group>
-
-      </div>
-      <div class="col-md-6">
-      <b-form-group id="input-group-3" label="Food:" label-for="input-3">
+      <b-form-group id="input-group-3" label="Tipo:" label-for="input-3">
         <b-form-select
           id="input-3"
           v-model="newActivity.type"
           :options="options"
           required
         ></b-form-select>
+      </b-form-group>
+
+      </div>
+      <div class="col-md-6">
+      <b-form-group id="input-group-2" label="Descrição:" label-for="input-2">
+        <b-form-input
+          id="input-2"
+          v-model="newActivity.description"
+          placeholder="Descrição"
+          required
+        ></b-form-input>
       </b-form-group>
       </div>
       </div>

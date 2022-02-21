@@ -276,7 +276,7 @@
       },
       cadastrarUsuario() {
         this.usuarioSelecionado = { profile: 1 };
-        this.$bvModal.show('form-user');
+        this.$modal.show('form-user');
       },
       // importUserCsv() {
       //   this.$modal.show('import-user');
@@ -299,7 +299,6 @@
             this.loading = false;
             this.error(`Não foi possível retornar a lista de usuários: ${e.message}`);
           });
-          console.log(this.listaUser)
       },
       buildSearchQuery() {
         let query = `/users?limit=${this.perPage}&currentPage=${this.currentPage}&filter=${this.keyword}`;

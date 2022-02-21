@@ -61,9 +61,9 @@
       async getTracks() {
         // TODO - descomentar e deixar compatível com api
         await this.$api()
-          .get(`users/${this.loggedUser._id}`)
+          .get(`tracks/filter/${this.loggedUser._id}`)
           .then((response) => {
-            this.tracks = response.data[0].tracks;
+            this.tracks = response.data;
           })
           .catch((e) => {
             console.log(e);

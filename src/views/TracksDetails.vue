@@ -35,13 +35,9 @@
         selectedActivityIndex: 0,
       };
     },
-    async created() {
-      console.log(this.selectedTrack.activities);
-      console.log(this.loggedUser);
-    },
+    async created() {},
     methods: {
       openTrackModal(activity) {
-        console.log('entrou aqui')
         this.selectedActivity = activity;
         this.$bvModal.show('activity-details')
       },

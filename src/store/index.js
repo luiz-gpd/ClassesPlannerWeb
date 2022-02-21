@@ -7,6 +7,7 @@ import LocalstorageStore from '../plugins/localstorage.store.plugin';
 import AuthModule from './modules/authStore';
 // #endregion modules
 
+console.log(variables.auth.userdetails);
 const storeUserPlugin = LocalstorageStore.create(
   'auth/setUser',
   variables.auth.userdetais,
