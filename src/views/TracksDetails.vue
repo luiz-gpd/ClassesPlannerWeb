@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2 class="title">Trilha {{selectedTrack.name}}</h2>
-    <div v-for="(activity, index) in selectedTrack.activities" :key="index">
+    <div v-for="(activity, index) in selectedTrack.activities" :key="index" class="parent">
       <img src="../assets/leftArrow.png" v-if="index !== 0 && index%2" class="arrow-l"/>
       <img src="../assets/rightArrow.png" v-if="index !== 0 && index%2 === 0" class="arrow-r"/>
       <div class="container mt-5" @click="openTrackModal(activity)">
@@ -74,10 +74,17 @@
     height: 120px;
     margin: -50px, auto;
     position: absolute;
+    left: 470px;
+    bottom: 75px;
   }
   .arrow-r {
     height: 120px;
     margin: -50px, auto;
     position: absolute;
+    left: 775px;
+    bottom: 75px;
+  }
+  .parent {
+    position: relative;
   }
 </style>

@@ -17,6 +17,8 @@
           </div>
       </b-col>
       </b-row>
+    <b-row>
+      <div>
     <div v-for="(track, index) in tracks" :key="index" class="center">
     <b-card no-body @click="seeTrack(track)" style="width: 16rem;" :class="`mr-4 mt-4 tables`"
     :header="track.name" :border-variant="colors[index%7]" :header-bg-variant="colors[index%7]" :header-text-variant="colors[index] === 'light'? '' : 'white'">
@@ -28,6 +30,16 @@
     </b-list-group>
     </b-card>
     </div>
+    </div>
+    </b-row>
+    <b-row class="mt-4 center">
+    <b-pagination
+      v-model="currentPage"
+      :total-rows="16"
+      :per-page="12"
+      aria-controls="my-table"
+    ></b-pagination>
+    </b-row>
     </div>
     <div v-else>
       <TrackDetails :loggedUser="loggedUser" :selectedTrack="selectedTrack"></TrackDetails>
@@ -46,6 +58,7 @@
     },
     data() {
       return {
+        currentPage: 1,
         loggedUser: undefined,
         tracks: [],
         selectedTrack: undefined,
@@ -56,13 +69,13 @@
     },
     async created() {
       this.loggedUser = this.$store.getters['auth/user'];
-      await this.getTracks();
+      await this.getTracks(1);
     },
     methods: {
-      async getTracks() {
+      async getTracks(page) {
         // TODO - descomentar e deixar compatível com api
         await this.$api()
-          .get(`home/tracks`)
+          .get(`home/tracks?page=${page}`)
           .then((response) => {
             this.tracks = response.data;
           })
@@ -81,6 +94,13 @@
         this.$router.push(`track/${this.selectedTrack._id}`)
       }
     },
+    watch: {
+      currentPage: {
+        handler: function(val) {
+          this.getTracks(val);
+        }
+      }
+    }
   };
 </script>
 

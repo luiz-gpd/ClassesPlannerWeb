@@ -131,7 +131,7 @@
                   <th scope="col">Email</th>
                   <th scope="col">Disciplina</th>
                   <th scope="col">Segmento</th>
-                  <th scope="col">Turma</th>
+                  <th scope="col">Série/Ano</th>
                   <th scope="col" style="text-align: center">Ações</th>
                 </tr>
               </thead>

@@ -1,5 +1,6 @@
 <template>
   <div>
+    <button @click="openPastTrackModal()">REUTILIZAR TRILHA EXISTENTE</button>
     <b-form>
       <div class="col-md-12">
       <div class="row">
@@ -14,7 +15,7 @@
       </b-form-group>
       </div>
       <div class="col-md-3">
-      <b-form-group id="input-group-3" label="Turma:" label-for="turma">
+      <b-form-group id="input-group-3" label="Série/Ano:" label-for="turma">
         <b-form-select
           id="turma"
           v-model="selectedTrack.turma"
@@ -33,6 +34,29 @@
       </b-form-group>
       </div>
       <div class="col-md-3">
+        <b-form-group id="input-group-3" label="Disciplina:" label-for="turma">
+        <b-form-select
+          id="turma"
+          v-model="selectedTrack.disciplina"
+          :options="options"
+          required
+        ></b-form-select>
+      </b-form-group>
+      </div>
+      </div>
+      </div>
+      <div class="col-md-12">
+      <div class="row">
+      <div class="col-md-6">
+      <b-form-group id="input-group-2" label="Observação:" label-for="observation">
+        <b-form-input
+          id="observation"
+          v-model="newActivity.observation"
+          placeholder="Observação"
+        ></b-form-input>
+      </b-form-group>
+      </div>
+      <div class="col-md-6">
       <b-form-group id="input-group-3" :label="`Habilidade Associadas: ${selectedTrack.associatedHabilities}`" label-for="associatedHabilities">
         <b-form-select
           id="associatedHabilities"
@@ -42,19 +66,6 @@
           multiple
           :select-size="4"
         ></b-form-select>
-      </b-form-group>
-      </div>
-      </div>
-      </div>
-      <div class="col-md-12">
-      <div class="row">
-      <div class="col-md-12">
-      <b-form-group id="input-group-2" label="Observação:" label-for="observation">
-        <b-form-input
-          id="observation"
-          v-model="newActivity.observation"
-          placeholder="Observação"
-        ></b-form-input>
       </b-form-group>
       </div>
       </div>
@@ -111,6 +122,28 @@
       <b-button type="submit" @click="save()" variant="primary">Salvar</b-button>
     <br/>
     <b-table class="tablez" striped head-variant="dark" bordered hover: :items="tableData"></b-table>
+    <b-modal
+      id="get-past-tracks"
+      ref="modal"
+      title="Submit Your Name"
+      @show="resetModal"
+      @hidden="resetModal"
+      @ok="handleOk"
+    >
+      <form ref="form" @submit.stop.prevent="handleSubmit">
+        <b-form-group
+          label="Name"
+          label-for="name-input"
+        >
+          <b-form-select
+            id="name-input"
+            v-model="trackName"
+            :options="pastTracks"
+            required
+          ></b-form-select>
+        </b-form-group>
+      </form>
+    </b-modal>
   </div>
 </template>
 
@@ -118,6 +151,7 @@
   export default {
     data() {
       return {
+        pastTracks: undefined,
         loggedUser: undefined,
         newActivity: {
           type: '',
@@ -170,6 +204,24 @@
               this.error('Erro ao encontrar trilha')
           });
         }
+      },
+      async openPastTrackModal() {
+        await this.$api()
+          .get(`past/tracks`)
+          .then((response) => {
+            this.pastTracks = response.data.map((e) => {
+              return {
+                value: e._id,
+                text: e.name
+              }
+            });
+                console.log(this.pastTracks)
+          })
+          .catch((e) => {
+            console.log(e);
+            this.error('Erro ao encontrar trilhas existentes')
+          });
+        this.$bvModal.show('get-past-tracks')
       },
       async save() {
         if (this.isCreate) {

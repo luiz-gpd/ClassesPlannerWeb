@@ -45,7 +45,7 @@
               <div class="row off-set-top-30">
                 <div class="col-md-6">
                     <!-- TODO - ESSE SELECT DEVE TER MÚTIPLAS OPÇÕES (BASEADO NO SEGMENTO ESCOLHIDO) -->
-                  <label>Turmas:</label>
+                  <label>Série(s)/Ano(s):</label>
                   <b-select :disabled="user.profile !== 1" v-model="user.turmas" :options="this.turmas" multiple :select-size="2"></b-select>
                 </div>
                 <div class="col-md-6">

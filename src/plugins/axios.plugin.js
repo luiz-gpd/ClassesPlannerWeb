@@ -6,7 +6,7 @@ const AxiosPlugin = {
       methods: {
         $api() {
           const authMetadata = this.$store.getters['auth/token'];
-          const headers = authMetadata ? { Authorization: `${authMetadata.token}` } : undefined;
+          const headers = authMetadata ? { Authorization: `Bearer ${authMetadata.token}` } : undefined;
           const updateProgress = (e) => {
             this.$NProgress().set(Math.floor(e.loaded * 1.0) / e.total);
           };

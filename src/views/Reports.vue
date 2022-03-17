@@ -7,7 +7,7 @@
           <b-nav-form>
             <b-row>
               <b-col class="m-4">
-                <b-row>Turmas:</b-row>
+                <b-row>Série(s)/Ano(s):</b-row>
                 <b-row>
                   <b-form-select
                     size="sm"
@@ -106,7 +106,6 @@
 </template>
 
 <script>
-  import config from '../helpers/generalConfig';
 
   export default {
     data() {
