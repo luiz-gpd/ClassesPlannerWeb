@@ -301,18 +301,17 @@
           });
       },
       buildSearchQuery() {
-        let query = `/users?limit=${this.perPage}&currentPage=${this.currentPage}&filter=${this.keyword}`;
+        let query = `/users?page=${1}&keyword=${this.keyword}`;
 
-        // if (this.filtroIsActiveSelecionado.value !== null) {
-        //   query += `&isActive=${this.filtroIsActiveSelecionado.value}`;
-        // }
-        // if (this.filtroGrupoSelecionado._id) {
-        //   query += `&group=${this.filtroGrupoSelecionado._id}`;
-        // }
+        if (this.segmentoSelecionado !== null) {
+          query += `&segmento=${this.segmentoSelecionado}`;
+        }
+        if (this.disciplinaSelecionada) {
+          query += `&disciplina=${this.disciplinaSelecionada}`;
+        }
         return query;
       },
       async deleteUser(user) {
-        console.log(user)
         this.$api()
             .delete(`users/${user._id}`)
             .then((response) => {

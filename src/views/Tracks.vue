@@ -125,10 +125,8 @@
     <b-modal
       id="get-past-tracks"
       ref="modal"
-      title="Submit Your Name"
-      @show="resetModal"
-      @hidden="resetModal"
-      @ok="handleOk"
+      title="Selecione uma trilha"
+      @ok="selectPastTrack()"
     >
       <form ref="form" @submit.stop.prevent="handleSubmit">
         <b-form-group
@@ -137,7 +135,7 @@
         >
           <b-form-select
             id="name-input"
-            v-model="trackName"
+            v-model="pastTrack"
             :options="pastTracks"
             required
           ></b-form-select>
@@ -151,6 +149,7 @@
   export default {
     data() {
       return {
+        pastTrack: undefined,
         pastTracks: undefined,
         loggedUser: undefined,
         newActivity: {
@@ -206,7 +205,8 @@
         }
       },
       async openPastTrackModal() {
-        await this.$api()
+        if(!this.pastTracks) {
+          await this.$api()
           .get(`past/tracks`)
           .then((response) => {
             this.pastTracks = response.data.map((e) => {
@@ -215,13 +215,26 @@
                 text: e.name
               }
             });
-                console.log(this.pastTracks)
           })
           .catch((e) => {
             console.log(e);
             this.error('Erro ao encontrar trilhas existentes')
           });
+        }
         this.$bvModal.show('get-past-tracks')
+      },
+      async selectPastTrack() {
+        if (this.pastTrack) {
+         await this.$api()
+          .get(`tracks/${this.pastTrack}`)
+          .then((response) => {
+            this.selectedTrack = response.data[0];
+          })
+          .catch((e) => {
+            console.log(e);
+            this.error('Erro ao encontrar a trilha selecionada')
+          });
+        }
       },
       async save() {
         if (this.isCreate) {
