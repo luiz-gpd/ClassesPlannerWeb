@@ -8,14 +8,49 @@
           <h1>Olá {{ loggedUser.exibitionName }}!</h1>
         </b-col>
         <b-col>
-          <b-form-group id="input-group-2" label="Buscar Trilha:" label-for="input-2">
-        <b-form-input
-          id="input-2"
-          v-model="trackName"
-          placeholder="Buscar Trilha"
-          required
-        ></b-form-input>
-      </b-form-group>
+          <div class="row">
+            <div class="col-md-12">
+              <b-form-group
+                id="input-group-2"
+                label="Buscar Trilha:"
+                label-for="input-2"
+              >
+                <b-form-input
+                  id="input-2"
+                  v-model="trackName"
+                  placeholder="Buscar Trilha"
+                  required
+                ></b-form-input>
+              </b-form-group>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <b-form-select
+                v-model="segmentoSelecionado"
+                :options="this.segmentoOptions"
+              >
+                <option :value="null">Segmento</option>
+                <span slot="no-options">Filtro não encontradao!</span>
+                <template slot="option" slot-scope="option">
+                  {{ option.title }}
+                </template>
+              </b-form-select>
+            </div>
+            <div class="col-md-6">
+              <b-form-select
+                v-model="disciplinaSelecionada"
+                :options="this.disciplinaOptions"
+                placeholder="Disciplina"
+              >
+                <option :value="null">Disciplina</option>
+                <span slot="no-options">Filtro não encontradao!</span>
+                <template slot="option" slot-scope="option">
+                  {{ option.name }}
+                </template>
+              </b-form-select>
+            </div>
+          </div>
         </b-col>
         <b-col>
           <b-popover
@@ -111,7 +146,18 @@ export default {
   },
   data() {
     return {
-      trackName: '',
+      trackName: "",
+      segmentoSelecionado: null,
+      disciplinaSelecionada: null,
+      segmentoOptions: [
+        {
+          value: 'yeps',
+          text: 'yeps'
+        }
+      ],
+      disciplinaOptions: {
+
+      },
       currentPage: 1,
       loggedUser: undefined,
       tracks: [],
@@ -134,10 +180,17 @@ export default {
     await this.getTracks(1);
   },
   methods: {
-    async getTracks(page, keyword) {
-      // TODO - descomentar e deixar compatível com api
-      const url = keyword ? `home/tracks?page=${page}&keyword=${keyword}` : `home/tracks?page=${page}`
-      console.log(url);
+    async getTracks(page, keyword, segmentoSelecionado, disciplinaSelecionada) {
+      let url = `home/tracks?page=${page}`
+      if (keyword) {
+        url += `&keyword=${keyword}`;
+      }
+      if (segmentoSelecionado) {
+        url += `&segmento=${segmentoSelecionado}`;
+      }
+      if (disciplinaSelecionada) {
+        url += `&disciplina=${disciplinaSelecionada}`;
+      }
       await this.$api()
         .get(url)
         .then((response) => {
@@ -163,16 +216,19 @@ export default {
         text: `Selecione qual formato você deseja baixar a trilha <b>${this.selectedTrack.name}</b>?`,
         buttons: [
           {
-            title: "Relatório(.xls)",
+            title: "Relatório(.xlsx)",
             default: false, // Will be triggered by default if 'Enter' pressed.
             handler: async () => {
               await this.$api()
                 .get(`tracks/only/report/${this.selectedTrack._id}`)
                 .then((response) => {
-                  const blob = new Blob([response.data], { type: 'application/excel' });
-                  const link = document.createElement('a');
+                  console.log(response);
+                  const blob = new Blob([response.data], {
+                    type: "application/excel",
+                  });
+                  const link = document.createElement("a");
                   link.href = window.URL.createObjectURL(blob);
-                  link.download = 'Relatório.xls';
+                  link.download = "Relatorio.xlsx";
                   link.click();
                 })
                 .catch((e) => {
@@ -191,13 +247,23 @@ export default {
   watch: {
     currentPage: {
       handler: function (val) {
-        this.getTracks(val);
+        this.getTracks(val, this.trackName, this.segmentoSelecionado, this. disciplinaSelecionada);
       },
     },
     trackName: {
       handler: function (val) {
-        console.log('entrou')
-        this.getTracks(1, val)
+        this.getTracks(1, val, this.segmentoSelecionado, this.disciplinaSelecionada);
+      },
+    },
+    segmentoSelecionado: {
+      handler: function (val) {
+        console.log('entrou aqui')
+        this.getTracks(1, this.trackName, val, this.disciplinaSelecionada);
+      },
+    },
+    disciplinaSelecionada: {
+      handler: function (val) {
+        this.getTracks(1, this.trackName, this.segmentoSelecionado, val);
       },
     },
   },

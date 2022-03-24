@@ -20,28 +20,25 @@
                 id="btnImportarUsuario"
                 type="button"
                 class="btn btn-primary"
+                v-on:click="this.importUserCsv"
               >
-                <!-- v-on:click="this.importUserCsv" -->
                 Importar Usuários <em class="fa fa-arrow-circle-up"></em>
               </button>
-              <i
-                v-b-tooltip.hover.v-light
-                title="Realizar Dowload do CSV"
-                id="tooltip-download"
-                class="fa fa-download"
-                aria-hidden="true"
-                style="font-size: 20px; margin-left: 10px"
-                v-b-modal.modal-download
-              />
+              <b-icon
+                      icon="download"
+                      aria-hidden="true"
+                      font-scale="2"
+                      class="ml-3 action-button"
+                        v-b-modal.modal-download
+                        v-b-tooltip.hover.v-light
+                        title="Realizar Dowload do CSV"
+                        variant="secondary"
+                      />
             </div>
             <b-modal id="modal-download" title="Formato CSV obrigatório" cancel-title="Cancelar">
               <ul>
                 <li>Os valores precisam ser separados por vírgulas( , ) ou pontos e vírgulas( ; )</li>
-                <li>As colunas devem ter os seguintes cabeçalhos. Valores: nome, nomeExibicao, email, localTrabalho</li>
-                <li>A coluna "nomeExibição" não pode conter informações com mais de 35 caracteres (incluindo espaços).</li>
-                <li class="red">
-                  Caso esta posição tenha mais do que o número de 35 caracteres o sistema cadastrará apenas o primeiro e último nome
-                </li>
+                <li>As colunas devem ter os seguintes cabeçalhos.<div class='red'>nome, disciplina, segmento</div></li>
                 <li>O tamanho máximo do arquivo é 1 MB</li>
               </ul>
               <br />
@@ -163,18 +160,19 @@
                   <td>
                       <b-icon
                         icon="pencil-fill"
-                        class="btn btn-success"
                         @click="editarUsuario(user)"
                         v-b-tooltip.hover.v-light
                         title="Editar"
+                        class='green-pencil action-button'
                       >
                       </b-icon>
                       <b-icon
-                      icon="x-square-fill"
-                        class="btn btn-warning"
-                        @click="deleteUser(user)"
+                      icon="trash"
+                      class="ml-3 action-button"
+                        @click="openDialog(user)"
                         v-b-tooltip.hover.v-light
                         title="Excluir"
+                        variant="danger"
                       />
                   </td>
                 </tr>
@@ -197,8 +195,8 @@
       </div>
     </div>
 
-    <b-modal id="modal-center" name="import-user" height="auto" style="padding-top: 25vh" :scrollable="true">
-      <!-- <ImportUserCSV></ImportUserCSV> -->
+    <b-modal id="import-user" name="import-user" height="auto" style="padding-top: 25vh" :scrollable="true">
+      <ImportUserCSV></ImportUserCSV>
     </b-modal>
     <modal name="form-user" @hidden="loadUsers()" height="auto" :scrollable="true">
       <UserForm :user="usuarioSelecionado"></UserForm>
@@ -208,7 +206,7 @@
 </template>
 
 <script>
-  // import ImportUserCSV from './ImportUserCSV.vue';
+  import ImportUserCSV from '../components/ImportUserCSV.vue';
   import Vue from 'vue';
   import JsonCSV from 'vue-json-csv';
   import UserForm from '../components/UserForm.vue'
@@ -217,7 +215,7 @@
 
   export default {
     components: {
-      // ImportUserCSV,
+      ImportUserCSV,
       UserForm,
     },
     data() {
@@ -278,9 +276,9 @@
         this.usuarioSelecionado = { profile: 1 };
         this.$modal.show('form-user');
       },
-      // importUserCsv() {
-      //   this.$modal.show('import-user');
-      // },
+      importUserCsv() {
+        this.$bvModal.show('import-user');
+      },
       async loadUsers(e) {
         if (e) {
           e.preventDefault();
@@ -311,11 +309,33 @@
         }
         return query;
       },
+      openDialog(user) {
+      this.$modal.show("dialog", {
+        title: "Excluir Usuário",
+        text: `Tem certeza que deseja excluir <b>${user.name}</b>? Essa ação não pode ser desfeita.`,
+        buttons: [
+          {
+            title: "Sim",
+            default: false, // Will be triggered by default if 'Enter' pressed.
+            handler: async () => {
+              this.deleteUser(user);
+            },
+          },
+          {
+            title: "Não",
+            handler: () => {
+              this.$modal.hide('dialog');
+            }
+          },
+        ],
+      });
+    },
       async deleteUser(user) {
         this.$api()
             .delete(`users/${user._id}`)
-            .then((response) => {
-              console.log(response)
+            .then(() => {
+              this.$modal.hide('dialog');
+              this.success('Usuário excluído com sucesso!')
               this.loadUsers()
             })
             .catch((e) => {
@@ -328,32 +348,14 @@
 </script>
 
 <style>
-  @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons');
-  @import url('https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css');
-
-  .avatar-image img {
-    height: 50px;
-    width: 50px;
-    border-radius: 50%;
-    -o-object-fit: cover;
-    object-fit: cover;
-  }
-
   .red {
     color: red;
   }
-
-  .to-left {
-    float: right;
+  .green-pencil {
+    color: rgb(76, 173, 76);
   }
-
-  .to-right {
-    float: right;
-    color: gray;
-  }
-
-  .orange {
-    color: orange;
+  .action-button {
+  cursor: pointer;
   }
 
   .form-control-aux {
