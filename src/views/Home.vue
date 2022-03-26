@@ -24,13 +24,13 @@
               </b-form-group>
             </div>
           </div>
-          <div class="row">
+          <div class="row" v-if="loggedUser.profile !== 1">
             <div class="col-md-6">
               <b-form-select
                 v-model="segmentoSelecionado"
                 :options="this.segmentoOptions"
               >
-                <option :value="null">Segmento</option>
+                <option :value="null" v-if="loggedUser.profile !== 2">Segmento</option>
                 <span slot="no-options">Filtro não encontradao!</span>
                 <template slot="option" slot-scope="option">
                   {{ option.title }}
@@ -43,7 +43,7 @@
                 :options="this.disciplinaOptions"
                 placeholder="Disciplina"
               >
-                <option :value="null">Disciplina</option>
+                <option :value="null" v-if="loggedUser.profile !== 3">Disciplina</option>
                 <span slot="no-options">Filtro não encontradao!</span>
                 <template slot="option" slot-scope="option">
                   {{ option.name }}
@@ -149,15 +149,8 @@ export default {
       trackName: "",
       segmentoSelecionado: null,
       disciplinaSelecionada: null,
-      segmentoOptions: [
-        {
-          value: 'yeps',
-          text: 'yeps'
-        }
-      ],
-      disciplinaOptions: {
-
-      },
+      segmentoOptions: [],
+      disciplinaOptions: [],
       currentPage: 1,
       loggedUser: undefined,
       tracks: [],
@@ -178,6 +171,7 @@ export default {
   async created() {
     this.loggedUser = this.$store.getters["auth/user"];
     await this.getTracks(1);
+    await this.getOptions()
   },
   methods: {
     async getTracks(page, keyword, segmentoSelecionado, disciplinaSelecionada) {
@@ -200,6 +194,17 @@ export default {
           console.log(e);
           this.error("Erro ao encontrar trilhas existentes");
         });
+    },
+    async getOptions() {
+      await this.$api()
+          .get('users/defaults')
+          .then((response) => {
+            this.segmentoOptions = response.data.segmentos;
+            this.disciplinaOptions = response.data.disciplinas;
+          })
+          .catch(() => {
+              this.error('Erro ao encontrar opções')
+          });
     },
     createTrack() {
       this.$router.push(`/track/0`);
