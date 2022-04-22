@@ -4,6 +4,21 @@
     <b-form>
       <div class="col-md-12">
       <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+      <b-form-group id="input-group-n" label="Nome da Trilha:" label-for="nome">
+        <b-form-input
+          id="nome"
+          v-model="selectedTrack.name"
+          required
+        ></b-form-input>
+      </b-form-group>
+      </div>
+      <div class="col-md-3"></div>
+      </div>
+      </div>
+      <div class="col-md-12">
+      <div class="row">
       <div class="col-md-3">
       <b-form-group id="input-group-3" label="Segmento:" label-for="segmento">
         <b-form-select
@@ -106,7 +121,7 @@
       <b-form-group id="input-group-3" label="Etapa:" label-for="input-3">
         <b-form-select
           id="input-3"
-          v-model="newActivity.step"
+          v-model="newActivity.steps"
           :options="optionsStep"
           required
         ></b-form-select>
@@ -203,7 +218,7 @@ export default {
       treatedAssociatedHabilities: undefined,
       loggedUser: undefined,
       newActivity: {
-        step: "",
+        steps: "",
         description: "",
       },
       selectedTrack: {
@@ -239,7 +254,7 @@ export default {
       this.selectedTrack.activities.map((e, index) => {
         data.push({
           passo: index + 1,
-          etapa: e.step,
+          etapa: e.steps,
           descricao: e.description,
         });
       });
@@ -289,7 +304,7 @@ export default {
           .get(`tracks/${this.$router.app._route.params.trackId}`)
           .then((response) => {
             this.selectedTrack = response.data[0];
-            this.segmento = this.selectedTrack.segmento
+            this.segmento = this.selectedTrack.segmento;
             this.associatedHabilities = this.selectedTrack.associatedHabilities;
             this.organizeTable();
           })
@@ -317,35 +332,34 @@ export default {
     async save() {
       try {
         if (this.isCreate) {
-          console.log(this.selectedTrack);
           await this.$api()
-          .post(`tracks`, this.selectedTrack)
-          .then((response) => {
-            this.selectedTrack = response.data;
-            this.organizeTable();
-            this.success(`Nova trilha salva com sucesso`);
-          })
-          .catch((e) => {
-            console.log(e)
-            this.error("Erro ao encontrar trilha");
-          });
-      } else {
-        await this.$api()
-          .put(`tracks`, this.selectedTrack)
-          .then((response) => {
-            this.selectedTrack = response.data;
-            this.organizeTable();
-            this.success(`Alteracao realizada com sucesso`);
-          })
-          .catch((e) => {
-            console.log(e)
-            this.error("Erro ao encontrar trilha");
-          });
-      }
-        } catch(e)  {
-          this.error("Se deu mal");
-          console.log(e);
+            .post(`tracks`, this.selectedTrack)
+            .then((response) => {
+              this.selectedTrack = response.data;
+              this.organizeTable();
+              this.success(`Nova trilha salva com sucesso`);
+            })
+            .catch((e) => {
+              console.log(e);
+              this.error("Erro ao encontrar trilha");
+            });
+        } else {
+          await this.$api()
+            .put(`tracks`, this.selectedTrack)
+            .then((response) => {
+              this.selectedTrack = response.data;
+              this.organizeTable();
+              this.success(`Alteracao realizada com sucesso`);
+            })
+            .catch((e) => {
+              console.log(e);
+              this.error("Erro ao encontrar trilha");
+            });
         }
+      } catch (e) {
+        this.error("Se deu mal");
+        console.log(e);
+      }
     },
     async getAssociatedHab() {
       await this.$api()
@@ -372,19 +386,19 @@ export default {
     },
     onSubmit() {
       this.selectedTrack.activities.push({
-        step: this.newActivity.step,
+        steps: this.newActivity.steps,
         description: this.newActivity.description,
         index: this.selectedTrack.activities.length,
       });
       this.organizeTable();
       this.newActivity = {
-        step: "",
+        steps: "",
         description: "",
       };
     },
     onReset() {
       this.newActivity = {
-        step: "",
+        steps: "",
         description: "",
       };
     },
@@ -414,17 +428,19 @@ export default {
     segmento: {
       handler: function (val) {
         this.selectedTrack.segmento = this.segmento;
-        const all = this.allTurmas.map((e) => {return e});
-        if(val === this.optionsSeg[0]) {
-          all.splice(5,Number.MAX_VALUE);
-        } else if(val === this.optionsSeg[1]) {
-          all.splice(9,Number.MAX_VALUE);
-          all.splice(0,5);
-        } else if(val === this.optionsSeg[2]) {
-          all.splice(13,Number.MAX_VALUE);
-          all.splice(0,9);
+        const all = this.allTurmas.map((e) => {
+          return e;
+        });
+        if (val === this.optionsSeg[0]) {
+          all.splice(5, Number.MAX_VALUE);
+        } else if (val === this.optionsSeg[1]) {
+          all.splice(9, Number.MAX_VALUE);
+          all.splice(0, 5);
+        } else if (val === this.optionsSeg[2]) {
+          all.splice(13, Number.MAX_VALUE);
+          all.splice(0, 9);
         } else {
-          all.splice(0,13);
+          all.splice(0, 13);
         }
         this.optionsTurma = all;
       },

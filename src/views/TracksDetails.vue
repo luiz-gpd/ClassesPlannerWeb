@@ -1,17 +1,24 @@
 <template>
   <div>
+    <p> {{`Ano: ${selectedTrack.turma}`}}</p>
+    <p> {{`Segmento: ${selectedTrack.segmento}`}}</p>
+    <p> {{`Disciplina: ${selectedTrack.disciplina}`}}</p>
+    <p> {{`Metodologia: ${selectedTrack.methodology}`}}</p>
+    <p> {{`Recurso: ${selectedTrack.resource}`}}</p>
+    <p> {{`Objetivo: ${selectedTrack.objectives}`}}</p>
+    <p> {{`Habilidades: ${selectedTrack.associatedHabilities.toString()}`}}</p> 
     <h2 class="title">Trilha {{selectedTrack.name}}</h2>
     <div v-for="(activity, index) in selectedTrack.activities" :key="index" class="parent">
       <img src="../assets/leftArrow.png" v-if="index !== 0 && index%2" class="arrow-l"/>
       <img src="../assets/rightArrow.png" v-if="index !== 0 && index%2 === 0" class="arrow-r"/>
       <div class="container mt-5" @click="openTrackModal(activity)">
       <div class="center">
-        {{ activity.type }}
+        {{ activity.steps }}
       </div>
       </div>
     </div>
     <b-modal id="activity-details" height="auto" :scrollable="true" ok-only footerClass="border-top-0" :centered="true"
-    :title="selectedActivity.type.replace(selectedActivity.type.charAt(0), selectedActivity.type.charAt(0).toUpperCase())">
+    :title="selectedActivity.steps.replace(selectedActivity.steps.charAt(0), selectedActivity.steps.charAt(0).toUpperCase())">
       {{ selectedActivity.description }}
     </b-modal>
   </div>
@@ -29,13 +36,15 @@
       return {
         loading: false,
         selectedActivity: {
-          type: '',
+          steps: '',
           description: '',
         },
         selectedActivityIndex: 0,
       };
     },
-    async created() {},
+    async created() {
+      console.log(this.selectedTrack)
+    },
     methods: {
       openTrackModal(activity) {
         this.selectedActivity = activity;

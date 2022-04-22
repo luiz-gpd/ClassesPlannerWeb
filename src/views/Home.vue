@@ -113,7 +113,7 @@
       <b-row class="mt-4 center">
         <b-pagination
           v-model="currentPage"
-          :total-rows="16"
+          :total-rows="this.totalRows"
           :per-page="12"
           aria-controls="my-table"
         ></b-pagination>
@@ -147,6 +147,7 @@ export default {
   data() {
     return {
       trackName: "",
+      totalRows: 0,
       segmentoSelecionado: null,
       disciplinaSelecionada: null,
       segmentoOptions: [],
@@ -188,7 +189,9 @@ export default {
       await this.$api()
         .get(url)
         .then((response) => {
-          this.tracks = response.data;
+          console.log(response);
+          this.tracks = response.data.tracks;
+          this.totalRows = response.data.pageInfo.count;
         })
         .catch((e) => {
           console.log(e);
