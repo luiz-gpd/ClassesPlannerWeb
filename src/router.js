@@ -1,47 +1,47 @@
-import Vue from 'vue';
-import Router from 'vue-router';
-import DefaultLayout from './layouts/TracksLayout.vue';
-import Login from './views/Login.vue';
-import Home from './views/Home.vue';
-import Admin from './views/Admin.vue';
-import Reports from './views/Reports.vue';
-import Tracks from './views/Tracks.vue'
+import Vue from "vue";
+import Router from "vue-router";
+import DefaultLayout from "./layouts/TracksLayout.vue";
+import Login from "./views/Login.vue";
+import Home from "./views/Home.vue";
+import Admin from "./views/Admin.vue";
+import Reports from "./views/Reports.vue";
+import Tracks from "./views/Tracks.vue";
 // import meuPerfil from './views/meuPerfil.vue';
 
-import Blank from './views/Blank.vue';
+import Blank from "./views/Blank.vue";
 
 Vue.use(Router);
 
 export default new Router({
-  mode: 'history',
+  mode: "history",
   routes: [
     {
-      path: '/',
+      path: "/",
       component: DefaultLayout,
       children: [
         {
-          path: 'login',
-          name: 'login',
+          path: "/login",
+          name: "login",
           component: Login,
         },
         {
-          path: 'home',
-          name: 'home',
+          path: "/home",
+          name: "home",
           component: Home,
         },
         {
-          path: '/admin',
-          name: 'admin',
+          path: "/admin",
+          name: "admin",
           component: Admin,
         },
         {
-          path: '/reports',
-          name: 'reports',
+          path: "/reports",
+          name: "reports",
           component: Reports,
         },
         {
-          path: '/track/:trackId',
-          name: 'track',
+          path: "/track/:trackId",
+          name: "track",
           component: Tracks,
         },
         // {
@@ -52,8 +52,8 @@ export default new Router({
       ],
     },
     {
-      path: '/blank',
-      name: 'blank',
+      path: "/blank",
+      name: "blank",
       component: Blank,
     },
   ],
