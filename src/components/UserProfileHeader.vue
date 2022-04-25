@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="metelecor">
     <div>
       <div class="navbar fixed-top p-0 navbar-adjustment">
         <div class="offset-lg-2 col-lg-1 col-sm-1 col-1 logo-topo">
@@ -94,6 +94,10 @@
   .select {
     width: 80%;
   }
+  .metelecor {
+    color: orange;
+    background-color: orange;
+  }
   .select .dropdown-toggle:after {
     display: none;
   }
@@ -143,7 +147,7 @@
     overflow: auto;
     padding-left: 1%;
     padding-right: 2%;
-    box-shadow: #394066;
+    box-shadow: blue;
     box-shadow: 0 8px 8px -4px gainsboro;
   }
 

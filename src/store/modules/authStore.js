@@ -46,6 +46,7 @@ const AuthModule = {
         const user = {
           _id: newUser._id,
           exibitionName: `${names[0]} ${names[names.length - 1]}`,
+          name: newUser.name,
           email: newUser.email,
           profile: newUser.profile,
         };

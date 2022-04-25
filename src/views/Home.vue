@@ -103,7 +103,7 @@
                 </b-list-group-item>
                 <b-list-group-item
                   ><b-icon icon="calendar3" :variant="colors[index % 7]" />
-                  {{ track.createdAt }}
+                  {{ treatedDate(track.createdAt) }}
                 </b-list-group-item>
               </b-list-group>
             </b-card>
@@ -123,21 +123,16 @@
       <TrackDetails
         :loggedUser="loggedUser"
         :selectedTrack="selectedTrack"
+        @editTrack="editTrack()"
+        @downloadTrack="openDialog()"
       ></TrackDetails>
-      <b-button v-on:click="selectedTrack = undefined">Voltar</b-button>
-      <b-button
-        class="ml-2"
-        v-if="loggedUser.profile === 1"
-        v-on:click="editTrack()"
-        >Editar Trilha</b-button
-      >
-      <b-button class="ml-2" v-on:click="openDialog()">Baixar Trilha</b-button>
     </div>
     <v-dialog />
   </div>
 </template>
 
 <script>
+import moment from 'moment';
 import TrackDetails from "./TracksDetails.vue";
 
 export default {
@@ -175,6 +170,9 @@ export default {
     await this.getOptions()
   },
   methods: {
+    treatedDate(date) {
+      return moment(date).format('DD/MM/YYYY')
+    },
     async getTracks(page, keyword, segmentoSelecionado, disciplinaSelecionada) {
       let url = `home/tracks?page=${page}`
       if (keyword) {

@@ -6,7 +6,7 @@ import Home from "./views/Home.vue";
 import Admin from "./views/Admin.vue";
 import Reports from "./views/Reports.vue";
 import Tracks from "./views/Tracks.vue";
-// import meuPerfil from './views/meuPerfil.vue';
+import meuPerfil from './views/MeuPerfil.vue';
 
 import Blank from "./views/Blank.vue";
 
@@ -44,11 +44,11 @@ export default new Router({
           name: "track",
           component: Tracks,
         },
-        // {
-        //   path: '/meuPerfil',
-        //   name: 'meuPerfil',
-        //   component: meuPerfil,
-        // },
+        {
+          path: '/meuPerfil',
+          name: 'meuPerfil',
+          component: meuPerfil,
+        },
       ],
     },
     {

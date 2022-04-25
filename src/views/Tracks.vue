@@ -3,29 +3,29 @@
     <b-button class="m-4" @click="openPastTrackModal()">REUTILIZAR TRILHA EXISTENTE</b-button>
     <b-form>
       <div class="col-md-12">
-      <div class="row">
-      <div class="col-md-3"></div>
-      <div class="col-md-6">
-      <b-form-group id="input-group-n" label="Nome da Trilha:" label-for="nome">
-        <b-form-input
-          id="nome"
-          v-model="selectedTrack.name"
-          required
-        ></b-form-input>
-      </b-form-group>
-      </div>
-      <div class="col-md-3"></div>
-      </div>
-      </div>
+        <div class="row">
+          <div class="col-md-3"></div>
+          <div class="col-md-6">
+            <b-form-group id="input-group-n" label="Nome da Trilha:" label-for="nome">
+              <b-form-input
+                id="nome"
+                v-model="selectedTrack.name"
+                required
+              ></b-form-input>
+            </b-form-group>
+          </div>
+          <div class="col-md-3"></div>
+          </div>
+        </div>
       <div class="col-md-12">
       <div class="row">
       <div class="col-md-3">
       <b-form-group id="input-group-3" label="Segmento:" label-for="segmento">
         <b-form-select
           id="segmento"
-          v-model="segmento"
+          v-model="selectedTrack.segmento"
           :options="optionsSeg"
-          required
+          disabled
         ></b-form-select>
       </b-form-group>
       </div>
@@ -36,7 +36,7 @@
           v-model="selectedTrack.turma"
           :options="optionsTurma"
           required
-          :disabled="!segmento"
+          :disabled="!selectedTrack.segmento"
         ></b-form-select>
       </b-form-group>
       </div>
@@ -114,6 +114,7 @@
     <br/>
     <br/>
     
+    <b-card bg-variant="secondary" title="Nova atividade" text-variant="white">
     <b-form>
       <div class="col-md-12">
       <div class="row">
@@ -133,7 +134,7 @@
         <b-form-input
           id="input-2"
           v-model="newActivity.description"
-          placeholder="Descrição"
+          placeholder="..."
           required
         ></b-form-input>
       </b-form-group>
@@ -143,10 +144,18 @@
       <b-button type="button" @click="onSubmit()" variant="primary">Adicionar atividade</b-button>
       <b-button type="button" @click="onReset()" class='ml-2' variant="danger">Limpar</b-button>
     </b-form>
+    </b-card>
     <br/>
-      <b-button type="submit" @click="save()" variant="primary">Salvar</b-button>
     <br/>
-    <b-table class="tablez" striped head-variant="dark" bordered hover: :items="tableData ? tableData : []"></b-table>
+    <b-table class="tablez" :key="tableKey" striped head-variant="dark" bordered hover: :items="tableData ? tableData : []" :fields="fields" >
+      <template #cell(acoes)="data">
+        <b-icon @click="editAction(data)" icon="pencil-fill" class="mr-2 ml-2 actions-on-table"/>
+        <b-icon @click="excludeAction(data)" icon="trash" class="ml-2 actions-on-table"/>
+      </template>
+    </b-table>
+    <br/>
+      <b-button block type="submit" @click="save()" variant="primary">Salvar</b-button>
+    <br/>
     <b-modal
       id="get-past-tracks"
       ref="modal"
@@ -208,9 +217,10 @@
 export default {
   data() {
     return {
-      segmento: undefined,
+      fields: ["passo", "etapa", { key:"descricao", label: "Descrição" }, { key: "acoes", label: "Ações" }],
       habTemas: null,
       temaHab: null,
+      tableKey: 0,
       items: [],
       pastTrack: undefined,
       pastTracks: undefined,
@@ -232,7 +242,6 @@ export default {
       },
       optionsSeg: [],
       optionsTurma: [],
-      allTurmas: [],
       optionsResources: [],
       optionsMethodology: [],
       optionsDisc: [],
@@ -304,7 +313,6 @@ export default {
           .get(`tracks/${this.$router.app._route.params.trackId}`)
           .then((response) => {
             this.selectedTrack = response.data[0];
-            this.segmento = this.selectedTrack.segmento;
             this.associatedHabilities = this.selectedTrack.associatedHabilities;
             this.organizeTable();
           })
@@ -316,10 +324,14 @@ export default {
     async getOptions() {
       await this.$api()
         .get("users/defaults")
-        .then((response) => {
-          this.optionsSeg = response.data.segmentos;
-          this.allTurmas = response.data.turmas;
-          this.optionsDisc = response.data.disciplinas;
+        .then(async (response) => {
+           await this.$api()
+          .get(`users/${this.loggedUser._id}`)
+          .then((result) => {
+            this.optionsSeg = result.data.segmento;
+            this.optionsDisc = result.data.disciplinas;
+            this.optionsTurma = result.data.turmas;
+          })
           this.optionsStep = response.data.steps;
           this.optionsMethodology = response.data.tipos;
           this.optionsResources = response.data.resources;
@@ -331,6 +343,7 @@ export default {
     },
     async save() {
       try {
+        console.log(this.selectedTrack);
         if (this.isCreate) {
           await this.$api()
             .post(`tracks`, this.selectedTrack)
@@ -381,7 +394,7 @@ export default {
         })
         .catch((e) => {
           console.log(e);
-          this.error("Erro ao encontrar opções");
+          this.error("Não há habilidades para essa turma e disciplina");
         });
     },
     onSubmit() {
@@ -395,6 +408,16 @@ export default {
         steps: "",
         description: "",
       };
+    },
+    excludeAction(row) {
+      this.tableData.splice(row.index, 1);
+      this.selectedTrack.activities.splice(row.index, 1);
+      this.tableKey++;
+    },
+    editAction(row) {
+      this.newActivity.steps = this.tableData[row.index].etapa;
+      this.newActivity.description = this.tableData[row.index].descricao;
+      this.excludeAction(row);
     },
     onReset() {
       this.newActivity = {
@@ -425,26 +448,6 @@ export default {
         this.treatedAssociatedHabilities = val.toString();
       },
     },
-    segmento: {
-      handler: function (val) {
-        this.selectedTrack.segmento = this.segmento;
-        const all = this.allTurmas.map((e) => {
-          return e;
-        });
-        if (val === this.optionsSeg[0]) {
-          all.splice(5, Number.MAX_VALUE);
-        } else if (val === this.optionsSeg[1]) {
-          all.splice(9, Number.MAX_VALUE);
-          all.splice(0, 5);
-        } else if (val === this.optionsSeg[2]) {
-          all.splice(13, Number.MAX_VALUE);
-          all.splice(0, 9);
-        } else {
-          all.splice(0, 13);
-        }
-        this.optionsTurma = all;
-      },
-    },
   },
 };
 </script>
@@ -452,5 +455,8 @@ export default {
 <style scoped>
 .tablez {
   border-radius: 10%;
+}
+.actions-on-table {
+  cursor: pointer;
 }
 </style>
