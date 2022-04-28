@@ -45,7 +45,7 @@ const AuthModule = {
         const names = newUser.name.split(' ');
         const user = {
           _id: newUser._id,
-          exibitionName: `${names[0]} ${names[names.length - 1]}`,
+          exibitionName: `${names[0]} ${names.length > 1 ? names[names.length - 1] : ''}`,
           name: newUser.name,
           email: newUser.email,
           profile: newUser.profile,

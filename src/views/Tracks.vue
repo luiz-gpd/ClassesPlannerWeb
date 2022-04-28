@@ -25,7 +25,6 @@
           id="segmento"
           v-model="selectedTrack.segmento"
           :options="optionsSeg"
-          disabled
         ></b-form-select>
       </b-form-group>
       </div>
@@ -328,9 +327,9 @@ export default {
            await this.$api()
           .get(`users/${this.loggedUser._id}`)
           .then((result) => {
-            this.optionsSeg = result.data.segmento;
-            this.optionsDisc = result.data.disciplinas;
-            this.optionsTurma = result.data.turmas;
+            this.optionsSeg = [result.data[0].segmento];
+            this.optionsDisc = result.data[0].disciplinas.length>0 ? result.data[0].disciplinas : response.data.disciplinas;
+            this.optionsTurma = result.data[0].turmas;
           })
           this.optionsStep = response.data.steps;
           this.optionsMethodology = response.data.tipos;
@@ -343,7 +342,14 @@ export default {
     },
     async save() {
       try {
-        console.log(this.selectedTrack);
+        if(this.selectedTrack.turma) {
+          this.error("O campo série é obrigatório");
+          return;
+        }
+        if(this.selectedTrack.disciplina) {
+          this.error("O campo disciplina é obrigatório");
+          return;
+        }
         if (this.isCreate) {
           await this.$api()
             .post(`tracks`, this.selectedTrack)
