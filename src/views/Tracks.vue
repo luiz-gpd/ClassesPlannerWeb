@@ -342,11 +342,11 @@ export default {
     },
     async save() {
       try {
-        if(this.selectedTrack.turma) {
+        if(!this.selectedTrack.turma) {
           this.error("O campo série é obrigatório");
           return;
         }
-        if(this.selectedTrack.disciplina) {
+        if(!this.selectedTrack.disciplina) {
           this.error("O campo disciplina é obrigatório");
           return;
         }
