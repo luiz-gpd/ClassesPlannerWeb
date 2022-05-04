@@ -18,7 +18,7 @@
               <li><b>Disciplina: </b>{{ selectedTrack.disciplina }}</li>
               <li><b>Metodologia: </b>{{ selectedTrack.methodology }}</li>
               <li><b>Recurso: </b>{{ selectedTrack.resource }}</li>
-              <li><b>Objetivo: </b>{{ selectedTrack.objectives }}</li>
+              <li><b>Duração da trilha: </b>{{ selectedTrack.objectives }}</li>
               <li><b>Habilidades: </b>{{ selectedTrack.associatedHabilities.toString() }}</li>
               <li><b>Observação: </b>{{ selectedTrack.observation }}</li>
             </ul>

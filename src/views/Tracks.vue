@@ -40,8 +40,9 @@
       </b-form-group>
       </div>
       <div class="col-md-3">
-      <b-form-group id="input-group-3" label="Objetivos:" label-for="objectives">
+      <b-form-group id="input-group-3" label="Duração da trilha:" label-for="objectives">
         <b-form-input
+          type="number"
           id="objectives"
           v-model="selectedTrack.objectives"
           required
